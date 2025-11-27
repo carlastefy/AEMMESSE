@@ -19,16 +19,16 @@ import java.util.List;
 
 @WebServlet("/index.html")
 public class HomePageServlet extends HttpServlet {
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         // Memorizza il carrello nella sessione
         // Ottieni la sessione corrente, creandone una nuova se non esiste
-        HttpSession session = request.getSession();
+        final HttpSession session = request.getSession();
 
         Carrello carrello = (Carrello) session.getAttribute("carrello");// Verifica se il carrello è già presente nella sessione
-        Utente utente=(Utente) session.getAttribute("utente");
+        final Utente utente=(Utente) session.getAttribute("utente");
 
         if(Validator.checkIfUserAdmin(utente)) {
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/homepageAdmin.jsp");
+            final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/homepageAdmin.jsp");
             dispatcher.forward(request, response);
         }
 
@@ -40,16 +40,16 @@ public class HomePageServlet extends HttpServlet {
         }
 
         if(request.getAttribute("libriHome")==null) {
-            List<Reparto> reparti = (List<Reparto>) getServletContext().getAttribute("reparti");
-            for (Reparto reparto : reparti) {
+            final List<Reparto> reparti = (List<Reparto>) getServletContext().getAttribute("reparti");
+            for (final Reparto reparto : reparti) {
                 if (reparto.getNome().equals("Libri di Tendenza")) {
-                    List<Libro> libriHome = reparto.getLibri();
+                    final List<Libro> libriHome = reparto.getLibri();
                     request.setAttribute("libriHome", libriHome);
                 }
             }
         }
 
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/homepage.jsp");
+        final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/homepage.jsp");
         dispatcher.forward(request, response);
 
     }

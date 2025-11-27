@@ -15,11 +15,11 @@ import model.wishList.WishListDAO;
 import java.io.IOException;
 @WebServlet("/show-wishlist")
 public class ShowWishList extends HttpServlet {
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
 
-        HttpSession session= request.getSession();
+        final HttpSession session= request.getSession();
         if(Validator.checkIfUserAdmin((Utente) session.getAttribute("utente"))) {
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/homepageAdmin.jsp");
+            final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/homepageAdmin.jsp");
             dispatcher.forward(request, response);
         }
         String address=null;
@@ -31,7 +31,7 @@ public class ShowWishList extends HttpServlet {
             address="/WEB-INF/results/login.jsp";
         }
 
-        RequestDispatcher dispatcher=request.getRequestDispatcher(address);
+        final RequestDispatcher dispatcher=request.getRequestDispatcher(address);
         dispatcher.forward(request, response);
 
 

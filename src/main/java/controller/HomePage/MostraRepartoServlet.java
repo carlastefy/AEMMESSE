@@ -19,19 +19,19 @@ import java.util.List;
 
 @WebServlet("/mostra-reparto")
 public class MostraRepartoServlet extends HttpServlet {
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         if(Validator.checkIfUserAdmin((Utente) request.getSession().getAttribute("utente"))) {
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/homepageAdmin.jsp");
+            final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/homepageAdmin.jsp");
             dispatcher.forward(request, response);
         }
-        int idReparto = Integer.parseInt(request.getParameter("id"));
-        String position = request.getParameter("position");
+        final int idReparto = Integer.parseInt(request.getParameter("id"));
+        final String position = request.getParameter("position");
         System.out.println(position);
         String address="/WEB-INF/results/reparto.jsp";
 
         Reparto reparto = new Reparto();
-        List<Reparto> reparti = (List<Reparto>) getServletContext().getAttribute("reparti");
-        for(Reparto r : reparti) {
+        final List<Reparto> reparti = (List<Reparto>) getServletContext().getAttribute("reparti");
+        for(final Reparto r : reparti) {
             if(r.getIdReparto() == idReparto) {
                 reparto = r;
             }
@@ -40,19 +40,19 @@ public class MostraRepartoServlet extends HttpServlet {
         if (reparto != null) {
             request.setAttribute("reparto", reparto);
 
-            HttpSession session = request.getSession();
+            final HttpSession session = request.getSession();
             session.setAttribute("repartoAttuale", idReparto);
             if (position != null) {
                 address += "#"+position;
                 System.out.println("address: "+address);
             }
         } else {
-            RequestDispatcher dispatcher=request.getRequestDispatcher("/WEB-INF/errorJsp/ErroreReparto.jsp");
+            final RequestDispatcher dispatcher=request.getRequestDispatcher("/WEB-INF/errorJsp/ErroreReparto.jsp");
             dispatcher.forward(request, response); //provvisorio
             request.setAttribute("repartoNonTrovato", true);
         }
 
-        RequestDispatcher dispatcher = request.getRequestDispatcher(address);
+        final RequestDispatcher dispatcher = request.getRequestDispatcher(address);
         dispatcher.forward(request, response);
     }
 }

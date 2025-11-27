@@ -33,7 +33,7 @@ public class AreaPersonaleServlet extends HttpServlet {
         dispatcher.forward(request, response);
     }
 
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         doGet(request, response);
     }
 }

@@ -19,24 +19,24 @@ import java.util.List;
 
 @WebServlet("/cart-servlet")
 public class CarrelloServlet extends HttpServlet {
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        Utente utente = (Utente) session.getAttribute("utente");
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+        final HttpSession session = request.getSession();
+        final Utente utente = (Utente) session.getAttribute("utente");
         if(Validator.checkIfUserAdmin(utente)) {
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/homepageAdmin.jsp");
+            final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/homepageAdmin.jsp");
             dispatcher.forward(request, response);
         }
-        Carrello carrello = (Carrello) session.getAttribute("carrello");
-        List<RigaCarrello> righe = carrello.getRigheCarrello();
+        final Carrello carrello = (Carrello) session.getAttribute("carrello");
+        final List<RigaCarrello> righe = carrello.getRigheCarrello();
         String disponibile = "no";
-        for(RigaCarrello r : righe){
+        for(final RigaCarrello r : righe){
             if(r.getLibro().isDisponibile()) {
                 disponibile = "si";
                 break;
             }
         }
         request.setAttribute("disponibile", disponibile);
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/stampaCarrello.jsp");
+        final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/stampaCarrello.jsp");
         dispatcher.forward(request, response);
     }
 
