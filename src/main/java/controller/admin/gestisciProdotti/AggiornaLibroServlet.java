@@ -13,27 +13,27 @@ import java.io.IOException;
 
 @WebServlet("/aggiorna-libro")
 public class AggiornaLibroServlet extends HttpServlet {
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        String titolo=request.getParameter("titolo");
-        String isbn=request.getParameter("isbn");
-        String annoPubb=request.getParameter("annoPubb");
-        String genere=request.getParameter("genere");
-        String prezzo1 = request.getParameter("prezzo");
-        String sconto1 = (request.getParameter("sconto"));
-        String trama=request.getParameter("trama");
-        String immagine=request.getParameter("immagine");
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
+        final String titolo=request.getParameter("titolo");
+        final String isbn=request.getParameter("isbn");
+        final String annoPubb=request.getParameter("annoPubb");
+        final String genere=request.getParameter("genere");
+        final String prezzo1 = request.getParameter("prezzo");
+        final String sconto1 = (request.getParameter("sconto"));
+        final String trama=request.getParameter("trama");
+        final String immagine=request.getParameter("immagine");
 
         if(titolo == null || titolo.isEmpty() || isbn == null || annoPubb == null || annoPubb.isEmpty() ||
         genere == null || genere.isEmpty() || prezzo1 == null || trama == null || immagine == null) {
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/errorJsp/erroreForm.jsp");
+            final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/errorJsp/erroreForm.jsp");
             dispatcher.forward(request, response);
         }
 
         double prezzo = 0;
         try{
             prezzo = Double.parseDouble(prezzo1);
-        }catch (NumberFormatException e){
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/errorJsp/erroreForm.jsp");
+        }catch (final NumberFormatException e){
+            final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/errorJsp/erroreForm.jsp");
             dispatcher.forward(request, response);
         }
 
@@ -41,12 +41,12 @@ public class AggiornaLibroServlet extends HttpServlet {
         if(isValid(sconto1))
             sconto = Integer.parseInt(sconto1);
         else {
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/errorJsp/erroreForm.jsp");
+            final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/errorJsp/erroreForm.jsp");
             dispatcher.forward(request, response);
         }
 
-        LibroDAO libroService = new LibroDAO();
-        Libro libro = new Libro();
+        final LibroDAO libroService = new LibroDAO();
+        final Libro libro = new Libro();
         libro.setTitolo(titolo);
         libro.setIsbn(isbn);
         libro.setGenere(genere);
@@ -57,16 +57,16 @@ public class AggiornaLibroServlet extends HttpServlet {
         libro.setImmagine(immagine);
 
         libroService.updateLibro(libro);
-        RequestDispatcher dispatcher = request.getRequestDispatcher("modifica-libro");
+        final RequestDispatcher dispatcher = request.getRequestDispatcher("modifica-libro");
         dispatcher.forward(request, response);
     }
 
-    public boolean isValid(String str){
+    public boolean isValid(final String str){
         return str.matches("\\d+");
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
         this.doGet(req, resp);
     }
 }

@@ -7,23 +7,21 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.libroService.Libro;
 import model.libroService.LibroDAO;
-import model.libroService.RepartoDAO;
-import model.libroService.SedeDAO;
 
 import java.io.IOException;
 
 @WebServlet("/disponibile")
 public class Disponibile extends HttpServlet {
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        String isbn= request.getParameter("isbn");
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
+        final String isbn= request.getParameter("isbn");
 
-        LibroDAO service = new LibroDAO();
-        Libro libro = service.doRetrieveById(isbn);
+        final LibroDAO service = new LibroDAO();
+        final Libro libro = service.doRetrieveById(isbn);
         libro.setDisponibile(true);
 
         service.updateDisponibile(libro);
 
-        RequestDispatcher dispatcher = request.getRequestDispatcher("gestisci-prodotti");
+        final RequestDispatcher dispatcher = request.getRequestDispatcher("gestisci-prodotti");
         dispatcher.forward(request, response);
     }
 }

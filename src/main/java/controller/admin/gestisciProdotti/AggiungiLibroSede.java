@@ -9,24 +9,22 @@ import jakarta.servlet.http.HttpServletResponse;
 import model.libroService.SedeDAO;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.List;
 
 @WebServlet("/aggiungiLibro-sede")
 public class AggiungiLibroSede extends HttpServlet {
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-            String[] idSedi= request.getParameterValues("sedeSelezionata");
-            String isbn = request.getParameter("isbn");
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
+            final String[] idSedi= request.getParameterValues("sedeSelezionata");
+            final String isbn = request.getParameter("isbn");
 
-            SedeDAO sedeService = new SedeDAO();
+            final SedeDAO sedeService = new SedeDAO();
             if(idSedi!=null) {
-                for (String idSede : idSedi) {
-                    int id = Integer.parseInt(idSede);
+                for (final String idSede : idSedi) {
+                    final int id = Integer.parseInt(idSede);
                     sedeService.doSavePresenza(id, isbn);
                 }
             }
 
-        RequestDispatcher dispatcher = request.getRequestDispatcher("modifica-libro");
+        final RequestDispatcher dispatcher = request.getRequestDispatcher("modifica-libro");
         dispatcher.forward(request, response);
 
     }

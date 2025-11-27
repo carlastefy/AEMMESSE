@@ -7,12 +7,10 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.libroService.Autore;
-import model.libroService.AutoreDAO;
 import model.libroService.Libro;
 import model.libroService.LibroDAO;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,51 +23,50 @@ public class NuovoLibroServlet extends HttpServlet {
         this.libroDAO = libroDAO;
     }
 
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
 
-        Libro libro = new Libro();
-        LibroDAO libroService = libroDAO;
+        final Libro libro = new Libro();
+        final LibroDAO libroService = libroDAO;
 
-        String isbn = request.getParameter("isbn");
-        String titolo = request.getParameter("titolo");
-        String genere = request.getParameter("genere");
-        String annoPubblicazioni = request.getParameter("annoPubb");
-        String price=request.getParameter("prezzo");
-        String sconto1 = request.getParameter("sconto");
-        String trama = request.getParameter("trama");
-        String immagine = request.getParameter("immagine");
-
+        final String isbn = request.getParameter("isbn");
+        final String titolo = request.getParameter("titolo");
+        final String genere = request.getParameter("genere");
+        final String annoPubblicazioni = request.getParameter("annoPubb");
+        final String price=request.getParameter("prezzo");
+        final String sconto1 = request.getParameter("sconto");
+        final String trama = request.getParameter("trama");
+        final String immagine = request.getParameter("immagine");
 
         if(isbn == null || isbn.length() != 13 || titolo == null || titolo.isEmpty() || genere == null || genere.isEmpty() ||
                 annoPubblicazioni == null || annoPubblicazioni.isEmpty() || !isAnnoPubblicazioneValid(annoPubblicazioni) ||
                 price == null || price.isEmpty() ||
                 sconto1 == null || trama == null || immagine == null){
-                RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/errorJsp/erroreForm.jsp");
+                final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/errorJsp/erroreForm.jsp");
                 dispatcher.forward(request, response);
         }else {
             try {
-                double prezzo = Double.parseDouble(price);
+                final double prezzo = Double.parseDouble(price);
                 int sconto = 0;
                 if (!sconto1.isEmpty() && isScontoValid(sconto1) && prezzo > 0) {
                     sconto = Integer.parseInt(sconto1);
                 }else{
-                    RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/errorJsp/erroreForm.jsp");
+                    final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/errorJsp/erroreForm.jsp");
                     dispatcher.forward(request, response);
                 }
 
-                String[] nomiAutori = request.getParameterValues("nome");
-                String[] cognomiAutori = request.getParameterValues("cognome");
-                String[] cfAutori = request.getParameterValues("cf");
+                final String[] nomiAutori = request.getParameterValues("nome");
+                final String[] cognomiAutori = request.getParameterValues("cognome");
+                final String[] cfAutori = request.getParameterValues("cf");
 
-                List<Autore> autori = new ArrayList<>();
+                final List<Autore> autori = new ArrayList<>();
 
                 if (nomiAutori != null && cognomiAutori != null && cfAutori != null) {
-                    for (int i = 0; i < nomiAutori.length; i++) {
+                    for (int i = 0; i < nomiAutori.length; ++i) {
                         if (nomiAutori[i].isEmpty() || cognomiAutori[i].isEmpty() || cfAutori[i].isEmpty()) {
-                            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/errorJsp/erroreForm.jsp");
+                            final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/errorJsp/erroreForm.jsp");
                             dispatcher.forward(request, response);
                         }
-                        Autore autore = new Autore();
+                        final Autore autore = new Autore();
                         autore.setNome(nomiAutori[i]);
                         autore.setCognome(cognomiAutori[i]);
                         autore.setCf(cfAutori[i]);
@@ -88,12 +85,12 @@ public class NuovoLibroServlet extends HttpServlet {
                 libro.setDisponibile(true);
                 libro.setAutori(autori);
 
-                List<Libro> libri = libroService.doRetriveAll();
+                final List<Libro> libri = libroService.doRetriveAll();
                 boolean flag = true;
-                for(Libro l: libri) {
+                for(final Libro l: libri) {
                     if(l.getIsbn().equals(isbn)) {
                         request.setAttribute("esito", "non riuscito");//per poter mostrare un errore nell'inserimento
-                        RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/prodotti/nuovoProdotto.jsp");
+                        final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/prodotti/nuovoProdotto.jsp");
                         dispatcher.forward(request, response);
                         flag = false;
                     }
@@ -103,31 +100,31 @@ public class NuovoLibroServlet extends HttpServlet {
                     response.sendRedirect("gestisci-prodotti");
                 }
 
-            } catch (NumberFormatException e) {
-                RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/errorJsp/erroreForm.jsp");
+            } catch (final NumberFormatException e) {
+                final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/errorJsp/erroreForm.jsp");
                 dispatcher.forward(request, response);
             }
         }
     }
 
-    public boolean isScontoValid(String str){
+    public boolean isScontoValid(final String str){
         if(str.matches("\\d+")){
-            int strInt = Integer.parseInt(str);
+            final int strInt = Integer.parseInt(str);
             return strInt > 0 && strInt <= 100;
         }
         return false;
     }
 
-    public boolean isAnnoPubblicazioneValid(String str){
+    public boolean isAnnoPubblicazioneValid(final String str){
         if(str.matches("\\d+")){
-            int strInt = Integer.parseInt(str);
+            final int strInt = Integer.parseInt(str);
             return strInt <= LocalDateTime.now().getYear() && strInt > 0;
         }
         return false;
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
         this.doGet(req, resp);
     }
 }

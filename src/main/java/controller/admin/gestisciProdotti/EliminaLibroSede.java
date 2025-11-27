@@ -11,14 +11,14 @@ import model.libroService.SedeDAO;
 import java.io.IOException;
 @WebServlet("/eliminaLibro-sede")
 public class EliminaLibroSede extends HttpServlet {
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        String isbn= request.getParameter("isbn");
-        int idSede = Integer.parseInt(request.getParameter("idSede"));
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
+        final String isbn= request.getParameter("isbn");
+        final int idSede = Integer.parseInt(request.getParameter("idSede"));
 
-        SedeDAO service = new SedeDAO();
+        final SedeDAO service = new SedeDAO();
         service.deleteFromPresenzaLibro(idSede, isbn);
 
-        RequestDispatcher dispatcher = request.getRequestDispatcher("modifica-libro");
+        final RequestDispatcher dispatcher = request.getRequestDispatcher("modifica-libro");
         dispatcher.forward(request, response);
     }
 }
