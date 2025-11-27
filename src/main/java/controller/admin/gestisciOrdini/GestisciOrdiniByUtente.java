@@ -16,16 +16,15 @@ import java.util.List;
 
 @WebServlet("/gestisci-ordiniByUtente")
 public class GestisciOrdiniByUtente extends HttpServlet {
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        OrdineDAO ordineDAO = new OrdineDAO();
-        UtenteDAO utenteDAO = new UtenteDAO();
-        Utente utente = utenteDAO.doRetrieveById(request.getParameter("utenteScelto"));
-        List<Ordine> ordini = ordineDAO.doRetrieveByUtente(utente.getEmail());
-
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
+        final OrdineDAO ordineDAO = new OrdineDAO();
+        final UtenteDAO utenteDAO = new UtenteDAO();
+        final Utente utente = utenteDAO.doRetrieveById(request.getParameter("utenteScelto"));
+        final List<Ordine> ordini = ordineDAO.doRetrieveByUtente(utente.getEmail());
         request.setAttribute("utenteScelto", utente);
         request.setAttribute("ordiniUtente", ordini);
 
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/ordini/stampaOrdini.jsp");
+        final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/ordini/stampaOrdini.jsp");
         dispatcher.forward(request, response);
     }
 }

@@ -12,8 +12,8 @@ import java.io.IOException;
 
 @WebServlet("/area-personaleAdmin")
 public class AreaPersonaleAdmin extends HttpServlet {
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+        final HttpSession session = request.getSession(false);
         String address;
         if (session != null && session.getAttribute("utente") != null) {
             address = "/WEB-INF/results/admin/areaPersonaleAdmin.jsp";
@@ -21,11 +21,11 @@ public class AreaPersonaleAdmin extends HttpServlet {
             address = "/WEB-INF/results/login.jsp";
         }
 
-        RequestDispatcher dispatcher = request.getRequestDispatcher(address);
+        final RequestDispatcher dispatcher = request.getRequestDispatcher(address);
         dispatcher.forward(request, response);
     }
 
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         doGet(request, response);
     }
 }

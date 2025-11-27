@@ -8,22 +8,20 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.ordineService.Ordine;
 import model.ordineService.OrdineDAO;
-import model.utenteService.Utente;
-import model.utenteService.UtenteDAO;
 
 import java.io.IOException;
 
 @WebServlet("/cambia-gestore")
 public class CambiaGestore extends HttpServlet {
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        OrdineDAO ordineDAO = new OrdineDAO();
-        Ordine ordine = ordineDAO.doRetrieveById(request.getParameter("ordineID"));
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
+        final OrdineDAO ordineDAO = new OrdineDAO();
+        final Ordine ordine = ordineDAO.doRetrieveById(request.getParameter("ordineID"));
 
         ordine.setMatricola(request.getParameter("matricola"));
         ordineDAO.updateOrdineMatricola(ordine);
         request.setAttribute("utenteScelto", request.getParameter("utenteScelto"));
 
-        RequestDispatcher dispatcher = request.getRequestDispatcher("gestisci-ordiniByUtente");
+        final RequestDispatcher dispatcher = request.getRequestDispatcher("gestisci-ordiniByUtente");
         dispatcher.forward(request, response);
     }
 }
