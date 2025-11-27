@@ -13,8 +13,8 @@ public class InitServlet extends HttpServlet {
 
     public void init() throws ServletException{
 
-        RepartoDAO service = new RepartoDAO();
-        List<Reparto> reparti = service.doRetrivedAll();
+        final RepartoDAO service = new RepartoDAO();
+        final List<Reparto> reparti = service.doRetrivedAll();
         getServletContext().setAttribute("reparti", reparti);
         super.init();
     }
