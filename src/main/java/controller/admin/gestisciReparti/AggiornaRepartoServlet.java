@@ -16,24 +16,24 @@ import java.io.IOException;
 
 @WebServlet("/aggiorna-reparto")
 public class AggiornaRepartoServlet extends HttpServlet {
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-            int id= Integer.parseInt(request.getParameter("idReparto"));
-            String descrizione=request.getParameter("descrizione");
-            String immagine=request.getParameter("immagine");
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
+            final int id= Integer.parseInt(request.getParameter("idReparto"));
+            final String descrizione=request.getParameter("descrizione");
+            final String immagine=request.getParameter("immagine");
             String address="/WEB-INF/results/admin/reparti/gestisciReparti.jsp";
             if(descrizione==null || immagine==null){
                     address="/WEB-INF/errorJsp/erroreForm.jsp";
             }
             else {
-                    RepartoDAO repartoService = new RepartoDAO();
-                    Reparto reparto = new Reparto();
+                    final RepartoDAO repartoService = new RepartoDAO();
+                    final Reparto reparto = new Reparto();
                     reparto.setIdReparto(id);
                     reparto.setDescrizione(descrizione);
                     reparto.setImmagine(immagine);
 
                     repartoService.updateReparto(reparto);
             }
-            RequestDispatcher dispatcher = request.getRequestDispatcher(address);
+            final RequestDispatcher dispatcher = request.getRequestDispatcher(address);
             dispatcher.forward(request, response);
     }
 }

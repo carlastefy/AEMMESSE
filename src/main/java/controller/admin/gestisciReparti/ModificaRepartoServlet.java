@@ -10,12 +10,12 @@ import java.io.IOException;
 
 @WebServlet("/modifica-reparto")
 public class ModificaRepartoServlet extends HttpServlet {
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
 
-        String isbn = request.getParameter("isbn");
-        int idReparto = Integer.parseInt(request.getParameter("idReparto"));
+        final String isbn = request.getParameter("isbn");
+        final int idReparto = Integer.parseInt(request.getParameter("idReparto"));
 
-        RepartoDAO repartoDAO = new RepartoDAO();
+        final RepartoDAO repartoDAO = new RepartoDAO();
         repartoDAO.removeLibroReparto(idReparto, isbn);
 
         response.sendRedirect("gestisci-reparti");

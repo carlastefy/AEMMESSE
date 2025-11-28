@@ -14,12 +14,12 @@ import java.util.List;
 
 @WebServlet("/gestisci-reparti")
 public class GestisciRepartiServlet extends HttpServlet {
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        RepartoDAO repartoService = new RepartoDAO();
-        List<Reparto> reparti = repartoService.doRetrivedAll();
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+        final RepartoDAO repartoService = new RepartoDAO();
+        final List<Reparto> reparti = repartoService.doRetrivedAll();
         request.setAttribute("reparti", reparti);
 
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/reparti/gestisciReparti.jsp");
+        final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/reparti/gestisciReparti.jsp");
         dispatcher.forward(request, response);
     }
 

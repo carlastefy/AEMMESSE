@@ -16,24 +16,24 @@ import java.util.List;
 
 @WebServlet("/aggiungi-libro")
 public class AggiungiLibroRepartoServlet extends HttpServlet {
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
 
-        RepartoDAO repartoDAO = new RepartoDAO();
-        Reparto r = repartoDAO.doRetrieveById(Integer.parseInt(request.getParameter("idReparto")));
+        final RepartoDAO repartoDAO = new RepartoDAO();
+        final Reparto r = repartoDAO.doRetrieveById(Integer.parseInt(request.getParameter("idReparto")));
         request.setAttribute("reparto", r);
 
-        LibroDAO libroService = new LibroDAO();
-        List<Libro> libri = libroService.doRetriveAll();
-        List<Libro> libriGiaPresenti = repartoDAO.getAppartenenza(r.getIdReparto());
+        final LibroDAO libroService = new LibroDAO();
+        final List<Libro> libri = libroService.doRetriveAll();
+        final List<Libro> libriGiaPresenti = repartoDAO.getAppartenenza(r.getIdReparto());
 
         if(!libriGiaPresenti.isEmpty()){
-            for(Libro l : libriGiaPresenti){
+            for(final Libro l : libriGiaPresenti){
                 libri.remove(l);
             }
         }
         request.setAttribute("libri", libri);
 
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/reparti/stampaLibri.jsp");
+        final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/reparti/stampaLibri.jsp");
         dispatcher.forward(request, response);
     }
 }
