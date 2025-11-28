@@ -15,22 +15,22 @@ import java.io.IOException;
 
 @WebServlet("/modifica-password-supporto")
 public class ModificaPasswordSupporto extends HttpServlet {
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        Utente utente = (Utente) session.getAttribute("utente");
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+        final HttpSession session = request.getSession();
+        final Utente utente = (Utente) session.getAttribute("utente");
 
         if(Validator.checkIfUserAdmin(utente)){
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/modificaPassAdmin.jsp");
+            final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/modificaPassAdmin.jsp");
             dispatcher.forward(request, response);
         }else{
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/areaPservices/modificaPassword.jsp");
+            final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/areaPservices/modificaPassword.jsp");
             dispatcher.forward(request, response);
         }
 
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
         this.doGet(req, resp);
     }
 }
