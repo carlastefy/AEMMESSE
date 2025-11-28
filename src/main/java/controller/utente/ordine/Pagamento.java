@@ -23,36 +23,36 @@ import java.util.List;
 
 @WebServlet("/do-pagamento")
 public class Pagamento extends HttpServlet {
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session= request.getSession();
-        Utente utente = (Utente) session.getAttribute("utente");
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+        final HttpSession session= request.getSession();
+        final Utente utente = (Utente) session.getAttribute("utente");
         if(Validator.checkIfUserAdmin(utente)) {
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/homepageAdmin.jsp");
+            final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/homepageAdmin.jsp");
             dispatcher.forward(request, response);
         }
 
-        List<RigaCarrello> righe = (List<RigaCarrello>) session.getAttribute("righeDisponibili");
-        Ordine ordine = new Ordine();
+        final List<RigaCarrello> righe = (List<RigaCarrello>) session.getAttribute("righeDisponibili");
+        final Ordine ordine = new Ordine();
       //  OrdineDAO ordineDAO = new OrdineDAO();
-        SedeDAO sedeDAO = new SedeDAO();
-        String type = request.getParameter("typeForm");
+        final SedeDAO sedeDAO = new SedeDAO();
+        final String type = request.getParameter("typeForm");
         String address = null;
 
         double costo = 0.00;
-        for(RigaCarrello r : righe){
-            Libro libro = r.getLibro();
-            double prezzoUnitario = libro.getPrezzo() - (libro.getPrezzo() * libro.getSconto()/100.00);
+        for(final RigaCarrello r : righe){
+            final Libro libro = r.getLibro();
+            final double prezzoUnitario = libro.getPrezzo() - (libro.getPrezzo() * libro.getSconto()/100.00);
             costo += r.getQuantita() * prezzoUnitario;
         }
 
-        BigDecimal bd = new BigDecimal(costo).setScale(2, RoundingMode.HALF_UP);
-        double costoArrotondato = bd.doubleValue();
+        final BigDecimal bd = new BigDecimal(costo).setScale(2, RoundingMode.HALF_UP);
+        final double costoArrotondato = bd.doubleValue();
 
         ordine.setCosto(costoArrotondato);
 
         if(type.equals("indirizzo")){
-            String indirizzo = request.getParameter("indirizzo") + ", " + request.getParameter("cap");
-            String citta = request.getParameter("citta");
+            final String indirizzo = request.getParameter("indirizzo") + ", " + request.getParameter("cap");
+            final String citta = request.getParameter("citta");
             if(request.getParameter("indirizzo")==null|| request.getParameter("cap")==null
                     || request.getParameter("indirizzo").isEmpty()|| request.getParameter("cap").isEmpty()
                     || citta==null || citta.isEmpty() || !isNumeric(request.getParameter("cap"))
@@ -77,7 +77,7 @@ public class Pagamento extends HttpServlet {
                 address = "/WEB-INF/errorJsp/erroreForm.jsp";
                // response.sendRedirect("/WEB-INF/errorJsp/erroreForm.jsp");//forse
             else {
-                Sede sede = sedeDAO.doRetrieveById(Integer.parseInt(request.getParameter("sede")));
+                final Sede sede = sedeDAO.doRetrieveById(Integer.parseInt(request.getParameter("sede")));
                 ordine.setCitta(sede.getCitta());
                 ordine.setIndirizzoSpedizione(sede.getVia() + ", " + sede.getCivico() + ", " + sede.getCap());
                 if(utente.getTipo().equalsIgnoreCase("Standard"))
@@ -90,16 +90,16 @@ public class Pagamento extends HttpServlet {
         //inizio a salvare dati per l'ordine e l'ordine in sessione, così dopo il pagamento la servlet lavora su quest'ordine
         request.setAttribute("ordine", ordine);
 
-        RequestDispatcher dispatcher = request.getRequestDispatcher(address);
+        final RequestDispatcher dispatcher = request.getRequestDispatcher(address);
         dispatcher.forward(request, response);
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
         this.doGet(req, resp);
     }
 
-    private static boolean isNumeric(String str) {//metodo che utilizza espressione regolare per verificare che una stringa contenga solo numeri
+    private static boolean isNumeric(final String str) {//metodo che utilizza espressione regolare per verificare che una stringa contenga solo numeri
         return str != null && str.matches("\\d+");
     }
 }

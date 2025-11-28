@@ -21,26 +21,26 @@ import java.util.List;
 
 @WebServlet("/procedi-ordine")
 public class ProcediOrdine extends HttpServlet {
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        Utente utente = (Utente) session.getAttribute("utente");
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+        final HttpSession session = request.getSession();
+        final Utente utente = (Utente) session.getAttribute("utente");
         if(Validator.checkIfUserAdmin(utente)) {
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/homepageAdmin.jsp");
+            final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/homepageAdmin.jsp");
             dispatcher.forward(request, response);
         }
-        LibroDAO libroDAO = new LibroDAO();
-        SedeDAO sedeDAO = new SedeDAO();
+        final LibroDAO libroDAO = new LibroDAO();
+        final SedeDAO sedeDAO = new SedeDAO();
 
-        List<Sede> sedi = sedeDAO.doRetrivedAll(); //tutte le sedi che abbiamo
-        List<Sede> sediDaAggiungere = sedeDAO.doRetrivedAll();
-        List<RigaCarrello> righe = (List<RigaCarrello>) session.getAttribute("righeDisponibili");
+        final List<Sede> sedi = sedeDAO.doRetrivedAll(); //tutte le sedi che abbiamo
+        final List<Sede> sediDaAggiungere = sedeDAO.doRetrivedAll();
+        final List<RigaCarrello> righe = (List<RigaCarrello>) session.getAttribute("righeDisponibili");
 
         if(!righe.isEmpty()){
-            for(RigaCarrello r : righe){
-                Libro l = r.getLibro();
+            for(final RigaCarrello r : righe){
+                final Libro l = r.getLibro();
                 //prendo le sedi di ogni libro
-                List<Sede> sedeLibro = libroDAO.getPresenzaSede(l.getIsbn());
-                for(Sede s : sedi){
+                final List<Sede> sedeLibro = libroDAO.getPresenzaSede(l.getIsbn());
+                for(final Sede s : sedi){
                     //se un libro non ha una delle sedi non la rendo visibile al momento della scelta dell'indirizzo
                     if(!(sedeLibro.contains(s)))
                         sediDaAggiungere.remove(s);
@@ -52,7 +52,7 @@ public class ProcediOrdine extends HttpServlet {
         //esso sia già disponibile in quella sede. Da valutare !!!
         request.setAttribute("sedi", sediDaAggiungere);
 
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/procediOrdine.jsp");
+        final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/procediOrdine.jsp");
         dispatcher.forward(request, response);
     }
 }

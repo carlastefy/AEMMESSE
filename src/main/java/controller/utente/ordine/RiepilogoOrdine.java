@@ -19,19 +19,19 @@ import java.util.List;
 
 @WebServlet("/riepilogo-ordine")
 public class RiepilogoOrdine extends HttpServlet {
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        Utente utente = (Utente) session.getAttribute("utente");
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+        final HttpSession session = request.getSession();
+        final Utente utente = (Utente) session.getAttribute("utente");
         if(Validator.checkIfUserAdmin(utente)) {
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/homepageAdmin.jsp");
+            final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/homepageAdmin.jsp");
             dispatcher.forward(request, response);
         }
-        String idOrdine = request.getParameter("idOrdine");
-        OrdineDAO ordineDAO = new OrdineDAO();
-        Ordine ordine = ordineDAO.doRetrieveById(idOrdine);
+        final String idOrdine = request.getParameter("idOrdine");
+        final OrdineDAO ordineDAO = new OrdineDAO();
+        final Ordine ordine = ordineDAO.doRetrieveById(idOrdine);
         session.setAttribute("ordine", ordine);
 
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/areaPservices/riepilogoOrdine.jsp");
+        final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/areaPservices/riepilogoOrdine.jsp");
         dispatcher.forward(request, response);
     }
 }

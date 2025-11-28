@@ -18,20 +18,20 @@ import java.util.List;
 
 @WebServlet("/visualizza-ordini")
 public class VisualizzaOrdini extends HttpServlet {
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         //metto gli ordini dell'utente in sessione così da poter
         //gestire meglio la stampa
-        HttpSession session = request.getSession();
-        Utente utente = (Utente) session.getAttribute("utente");
+        final HttpSession session = request.getSession();
+        final Utente utente = (Utente) session.getAttribute("utente");
         if(Validator.checkIfUserAdmin(utente)) {
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/homepageAdmin.jsp");
+            final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/homepageAdmin.jsp");
             dispatcher.forward(request, response);
         }
-        OrdineDAO ordineDAO = new OrdineDAO();
-        List<Ordine> ordini = ordineDAO.doRetrieveByUtente(utente.getEmail());
+        final OrdineDAO ordineDAO = new OrdineDAO();
+        final List<Ordine> ordini = ordineDAO.doRetrieveByUtente(utente.getEmail());
         session.setAttribute("ordini", ordini);
 
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/areaPservices/visualizzaOrdini.jsp");
+        final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/areaPservices/visualizzaOrdini.jsp");
         dispatcher.forward(request, response);
     }
 }

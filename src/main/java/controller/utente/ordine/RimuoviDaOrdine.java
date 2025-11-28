@@ -19,27 +19,27 @@ import java.util.List;
 @WebServlet("/rimuovi-ordine")
 public class RimuoviDaOrdine extends HttpServlet {
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        Utente utente = (Utente) session.getAttribute("utente");
+    protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+        final HttpSession session = request.getSession();
+        final Utente utente = (Utente) session.getAttribute("utente");
         if(Validator.checkIfUserAdmin(utente)) {
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/homepageAdmin.jsp");
+            final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/homepageAdmin.jsp");
             dispatcher.forward(request, response);
         }
-        OrdineDAO ordineDAO = new OrdineDAO();
+        final OrdineDAO ordineDAO = new OrdineDAO();
 
         // Ottiene i parametri dalla richiesta
-        String isbn = request.getParameter("isbn");
-        String idOrdine = (request.getParameter("idOrdine"));
+        final String isbn = request.getParameter("isbn");
+        final String idOrdine = (request.getParameter("idOrdine"));
 
         // Ottiene l'ordine dalla sessione
-        List<RigaOrdine> righeOrdine = (List<RigaOrdine>) ordineDAO.doRetrieveById(idOrdine).getRigheOrdine();
+        final List<RigaOrdine> righeOrdine = (List<RigaOrdine>) ordineDAO.doRetrieveById(idOrdine).getRigheOrdine();
 
         // Rimuove la riga d'ordine corrispondente
         if (isbn != null && !righeOrdine.isEmpty()) {
-            Iterator<RigaOrdine> iterator = righeOrdine.iterator();
+            final Iterator<RigaOrdine> iterator = righeOrdine.iterator();
             while (iterator.hasNext()) {
-                RigaOrdine riga = iterator.next();
+                final RigaOrdine riga = iterator.next();
                 if (riga.getLibro().getIsbn().equals(isbn) && riga.getIdOrdine().equals(idOrdine)) {
                     iterator.remove();
                     break;

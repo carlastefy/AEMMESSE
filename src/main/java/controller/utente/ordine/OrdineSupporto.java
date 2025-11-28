@@ -18,25 +18,25 @@ import java.util.List;
 
 @WebServlet("/ordine-supporto")
 public class OrdineSupporto extends HttpServlet {
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        Utente utente = (Utente) session.getAttribute("utente");
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+        final HttpSession session = request.getSession();
+        final Utente utente = (Utente) session.getAttribute("utente");
         if (Validator.checkIfUserAdmin(utente)) {
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/homepageAdmin.jsp");
+            final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/homepageAdmin.jsp");
             dispatcher.forward(request, response);
         }
 
         if (utente == null) { //controllo che l'utente sia in sessione altrimenti non può acquistare
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/login.jsp");
+            final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/login.jsp");
             dispatcher.forward(request, response);
             return;
         }
 
         //controllo che i libri nel carrello siano tutti disponibili per l'acquisto e aggiungo la lista nella sessione
-        Carrello carrello = (Carrello) session.getAttribute("carrello");
-        List<RigaCarrello> righe = carrello.getRigheCarrello();
-        List<RigaCarrello> nuoveRighe = new ArrayList<>();
-        for(RigaCarrello rigaCarrello : righe){
+        final Carrello carrello = (Carrello) session.getAttribute("carrello");
+        final List<RigaCarrello> righe = carrello.getRigheCarrello();
+        final List<RigaCarrello> nuoveRighe = new ArrayList<>();
+        for(final RigaCarrello rigaCarrello : righe){
             if(rigaCarrello.getLibro().isDisponibile()){
                 nuoveRighe.add(rigaCarrello);
             }
@@ -44,7 +44,7 @@ public class OrdineSupporto extends HttpServlet {
 
         session.setAttribute("righeDisponibili", nuoveRighe);
 
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/revisioneOrdine.jsp");
+        final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/revisioneOrdine.jsp");
         dispatcher.forward(request, response);
     }
 }

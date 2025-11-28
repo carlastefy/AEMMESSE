@@ -51,26 +51,26 @@ public class OrdineServlet extends HttpServlet {
     public void setOrdineDAO(OrdineDAO ordineDAO){
         this.ordineDAO = ordineDAO;
     }
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         //prendo ciò che ho in  sessione
-        HttpSession session= request.getSession();
+        final HttpSession session= request.getSession();
         if(Validator.checkIfUserAdmin((Utente) session.getAttribute("utente"))) {
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/homepageAdmin.jsp");
+            final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/homepageAdmin.jsp");
             dispatcher.forward(request, response);
         }
 
         //non faccio il controllo poichè lo faccio negli step prima...quindi se non ci fossero righe non dovrebbe
         //proprio arrivare a questo punto.
-        List<RigaCarrello> righeCarrello = (List<RigaCarrello>) session.getAttribute("righeDisponibili");
+        final List<RigaCarrello> righeCarrello = (List<RigaCarrello>) session.getAttribute("righeDisponibili");
 
-        Carrello carrello = (Carrello) session.getAttribute("carrello");
-        Utente utente = (Utente) session.getAttribute("utente");
+        final Carrello carrello = (Carrello) session.getAttribute("carrello");
+        final Utente utente = (Utente) session.getAttribute("utente");
 
         //credo gli oggetti che mi serviranno e i relativi services
-        Ordine ordine = new Ordine();
+        final Ordine ordine = new Ordine();
         //RigaOrdineDAO rigaOrdineDAO = new RigaOrdineDAO();
-        TesseraDAO tesseraDAO = new TesseraDAO();
-        Carrello carrelloDB = carrelloDAO.doRetriveByUtente(utente.getEmail());
+        final TesseraDAO tesseraDAO = new TesseraDAO();
+        final Carrello carrelloDB = carrelloDAO.doRetriveByUtente(utente.getEmail());
 
         //parametri passati da servlet a jsp...
         ordine.setIndirizzoSpedizione(request.getParameter("indirizzo"));
@@ -78,7 +78,7 @@ public class OrdineServlet extends HttpServlet {
 
        // if(utente.getTipo().equalsIgnoreCase("premium")){
         //setto i punti, se è un utente standard sono a 0
-            String puntiString = request.getParameter("punti");
+            final String puntiString = request.getParameter("punti");
             int punti = 0;
             if(puntiString != null && !puntiString.isEmpty())
                 punti = Integer.parseInt(puntiString);
@@ -91,27 +91,27 @@ public class OrdineServlet extends HttpServlet {
         double costo = 0;
         int puntiAcquisiti = 0;
         //creo idOrdine
-        List<String> idOrdini = ordineDAO.doRetrivedAllByIdOrdini(); //mock
+        final List<String> idOrdini = ordineDAO.doRetrivedAllByIdOrdini(); //mock
         String idOrdine;
-        Random random =new Random();
+        final Random random =new Random();
         do {
             idOrdine = "T" + random.nextInt(10) + random.nextInt(10) + random.nextInt(10);
         }while(idOrdini.contains(idOrdine));
         ordine.setIdOrdine(idOrdine);
 
 
-        List<RigaOrdine> righeOrdine = new ArrayList<>();
+        final List<RigaOrdine> righeOrdine = new ArrayList<>();
         //prendo i libri selezionati dalle righe carrello e calcolo il costo e i punti
 
-        for(RigaCarrello rigaCarrello : righeCarrello){
-            Libro l = rigaCarrello.getLibro();
-            RigaOrdine riga = new RigaOrdine();
+        for(final RigaCarrello rigaCarrello : righeCarrello){
+            final Libro l = rigaCarrello.getLibro();
+            final RigaOrdine riga = new RigaOrdine();
             riga.setIdOrdine(ordine.getIdOrdine());
             riga.setLibro(l);
 
-            double prezzoUnitarioPrima = (l.getPrezzo() - (l.getPrezzo()*l.getSconto()/100));
-            BigDecimal bd = new BigDecimal(prezzoUnitarioPrima).setScale(2, RoundingMode.HALF_UP);
-            double prezzoUnitario = bd.doubleValue();
+            final double prezzoUnitarioPrima = (l.getPrezzo() - (l.getPrezzo()*l.getSconto()/100));
+            final BigDecimal bd = new BigDecimal(prezzoUnitarioPrima).setScale(2, RoundingMode.HALF_UP);
+            final double prezzoUnitario = bd.doubleValue();
             riga.setPrezzoUnitario(prezzoUnitario);
             riga.setQuantita(rigaCarrello.getQuantita());
 
@@ -125,19 +125,21 @@ public class OrdineServlet extends HttpServlet {
 
             //quando scorro la lista delle righe del carrello che voglio acquistare
             //devo eventualmente cancellare la riga in sessione e nel db, o settare la quantità.
-            for(int i=0; i<carrelloDB.getRigheCarrello().size(); i++){
-                RigaCarrello rc = carrelloDB.getRigheCarrello().get(i);
-                Libro libroRC = rc.getLibro();
+            int sizeRigheCarrello = carrelloDB.getRigheCarrello().size();//prima nel ciclo c'era i< della chaimata a funzione
+            for(int i=0; i<sizeRigheCarrello; ++i){//creedengo preferisce ++i invece i++
+                final RigaCarrello rc = carrelloDB.getRigheCarrello().get(i);
+                final Libro libroRC = rc.getLibro();
                 if(libroRC.equals(l)){
-                    int differenza = rc.getQuantita() - rigaCarrello.getQuantita();
+                    final int differenza = rc.getQuantita() - rigaCarrello.getQuantita();
                     if (differenza <= 0){
                         rigaCarrelloDAO.deleteRigaCarrello(l.getIsbn(), carrelloDB.getIdCarrello());
 
                     }
                 }
             }
-            for(int j = 0; j<carrello.getRigheCarrello().size(); j++){
-                RigaCarrello rigaInSessione = carrello.getRigheCarrello().get(j);
+            sizeRigheCarrello = carrello.getRigheCarrello().size();
+            for(int j = 0; j<sizeRigheCarrello; ++j){
+                final RigaCarrello rigaInSessione = carrello.getRigheCarrello().get(j);
                 if(rigaInSessione.getLibro().equals(l)){
                     carrello.getRigheCarrello().remove(j);
                     break;
@@ -150,7 +152,7 @@ public class OrdineServlet extends HttpServlet {
 
         //aggiorno tessera
        if(utente.getTipo().equalsIgnoreCase("premium")){
-           Tessera tessera = tesseraDAO.doRetrieveByEmail(utente.getEmail());
+           final Tessera tessera = tesseraDAO.doRetrieveByEmail(utente.getEmail());
            if(tessera.getDataScadenza().isAfter(LocalDate.now())){
                tessera.setPunti(tessera.getPunti() - ordine.getPuntiSpesi() + ordine.getPuntiOttenuti());
                 tesseraDAO.updateTessera(tessera);
@@ -160,9 +162,9 @@ public class OrdineServlet extends HttpServlet {
        }
 
         // ordine.setCosto(Double.parseDouble(request.getParameter("costo")));
-        double costoAggiornato=costo - (ordine.getPuntiSpesi() * 0.10);
-        BigDecimal bd = new BigDecimal(costoAggiornato).setScale(2, RoundingMode.HALF_UP);
-        double costoArrotondato = bd.doubleValue();
+        final double costoAggiornato=costo - (ordine.getPuntiSpesi() * 0.10);
+        final BigDecimal bd = new BigDecimal(costoAggiornato).setScale(2, RoundingMode.HALF_UP);
+        final double costoArrotondato = bd.doubleValue();
         ordine.setCosto(costoArrotondato); //lo ricalcolo per sicurezza
             //utente che effettua l'ordine
         ordine.setEmail(utente.getEmail());
@@ -172,9 +174,9 @@ public class OrdineServlet extends HttpServlet {
         ordine.setRigheOrdine(righeOrdine);
 
         ordine.setStato("In Lavorazione");
-        GestoreDAO gestoreDAO = new GestoreDAO();
-        Random rand = new Random();
-        List<Gestore> gestoriDispo = gestoreDAO.doRetrivedAll();
+        final GestoreDAO gestoreDAO = new GestoreDAO();
+        final Random rand = new Random();
+        final List<Gestore> gestoriDispo = gestoreDAO.doRetrivedAll();
         ordine.setMatricola(gestoriDispo.get(rand.nextInt(gestoriDispo.size())).getMatricola());
 
         ordineDAO.doSave(ordine);
