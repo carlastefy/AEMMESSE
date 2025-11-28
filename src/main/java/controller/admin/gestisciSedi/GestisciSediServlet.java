@@ -6,8 +6,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import model.libroService.Reparto;
-import model.libroService.RepartoDAO;
 import model.libroService.Sede;
 import model.libroService.SedeDAO;
 
@@ -16,12 +14,12 @@ import java.util.List;
 
 @WebServlet("/gestisci-sedi")
 public class GestisciSediServlet extends HttpServlet {
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        SedeDAO sedeService = new SedeDAO();
-        List<Sede> sedi = sedeService.doRetrivedAll();
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+        final SedeDAO sedeService = new SedeDAO();
+        final List<Sede> sedi = sedeService.doRetrivedAll();
         request.setAttribute("sedi", sedi);
 
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/sedi/gestisciSedi.jsp");
+        final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/sedi/gestisciSedi.jsp");
         dispatcher.forward(request, response);
     }
 
