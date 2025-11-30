@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OrdineDAO {
-    public void doSave(Ordine ordine){
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps = con.prepareStatement(
+    public void doSave(final Ordine ordine){
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps = con.prepareStatement(
                     "INSERT INTO ordine (idOrdine, costo, indirizzoSpedizione, citta, puntiOttenuti, puntiSpesi, dataEffettuazione, stato,matricola, email) VALUES(?,?,?,?,?,?,?,?,?,?)");
             ps.setString(1, ordine.getIdOrdine());
             ps.setDouble(2, ordine.getCosto());
@@ -27,34 +27,34 @@ public class OrdineDAO {
             if (ps.executeUpdate() != 1) {
                 throw new RuntimeException("INSERT error.");
             }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
         //aggiunto questo
-        RigaOrdineDAO rigaService=new RigaOrdineDAO();
-        for(RigaOrdine riga: ordine.getRigheOrdine()){
+        final RigaOrdineDAO rigaService=new RigaOrdineDAO();
+        for(final RigaOrdine riga: ordine.getRigheOrdine()){
             rigaService.doSave(riga);
         }
     }
-    public Ordine doRetrieveById(String idOrdine) {
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps =
-                    con.prepareStatement("SELECT * FROM ordine WHERE idOrdine=?");
+    public Ordine doRetrieveById(final String idOrdine) {
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps =
+                    con.prepareStatement("SELECT idOrdine, costo, indirizzoSpedizione, citta, puntiOttenuti, puntiSpesi, dataArrivo, dataEffettuazione, stato, matricola, email FROM ordine WHERE idOrdine=?");
             ps.setString(1, idOrdine);
-            ResultSet rs = ps.executeQuery();
+            final ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                Ordine p = new Ordine();
+                final Ordine p = new Ordine();
                 //aggiunto questo
-                RigaOrdineDAO rigaService=new RigaOrdineDAO();
+                final RigaOrdineDAO rigaService=new RigaOrdineDAO();
                 p.setIdOrdine(rs.getString(1));
                 p.setCosto(rs.getDouble(2));
                 p.setIndirizzoSpedizione(rs.getString(3));
                 p.setCitta(rs.getString(4));
                 p.setPuntiOttenuti(rs.getInt(5));
                 p.setPuntiSpesi(rs.getInt(6));
-                Date dataArrivoSQL = rs.getDate(7);
+                final Date dataArrivoSQL = rs.getDate(7);
                 if (dataArrivoSQL != null) {
-                    LocalDate dataArrivo = dataArrivoSQL.toLocalDate();
+                    final LocalDate dataArrivo = dataArrivoSQL.toLocalDate();
                     p.setDataArrivo(dataArrivo);
                 } else {
                     // Gestione del caso in cui il valore sia null
@@ -71,106 +71,106 @@ public class OrdineDAO {
                 return p;
             }
             return null;
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public List<Ordine> doRetrieveByUtente(String email) {
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps =
-                    con.prepareStatement("SELECT * FROM ordine WHERE email=?");
+    public List<Ordine> doRetrieveByUtente(final String email) {
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps =
+                    con.prepareStatement("SELECT idOrdine, costo, indirizzoSpedizione, citta, puntiOttenuti, puntiSpesi, dataArrivo, dataEffettuazione, stato, matricola, email FROM ordine WHERE email=?");
             ps.setString(1, email);
-            List<Ordine> ordini=new ArrayList<>();
-            ResultSet rs = ps.executeQuery();
+            final List<Ordine> ordini=new ArrayList<>();
+            final ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 ordini.add(doRetrieveById(rs.getString(1)));
             }
             return ordini;
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
     //modifico stato e data arrivo dell'ordine
-    public void updateOrdine(Ordine ordine){
-        try(Connection con = ConPool.getConnection()){
-            PreparedStatement ps = con.prepareStatement("UPDATE ordine SET stato = ?, dataArrivo = ? WHERE idOrdine = ?");
+    public void updateOrdine(final Ordine ordine){
+        try(final Connection con = ConPool.getConnection()){
+            final PreparedStatement ps = con.prepareStatement("UPDATE ordine SET stato = ?, dataArrivo = ? WHERE idOrdine = ?");
             ps.setString(1, ordine.getStato());
             ps.setDate(2, Date.valueOf(ordine.getDataArrivo()));
             ps.setString(3, ordine.getIdOrdine());
             if(ps.executeUpdate() != 1)
                 throw new RuntimeException("UPDATE error.");
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
-    public void updateStato(Ordine ordine){
-        try(Connection con = ConPool.getConnection()){
-            PreparedStatement ps = con.prepareStatement("UPDATE ordine SET stato = ? WHERE idOrdine = ?");
+    public void updateStato(final Ordine ordine){
+        try(final Connection con = ConPool.getConnection()){
+            final PreparedStatement ps = con.prepareStatement("UPDATE ordine SET stato = ? WHERE idOrdine = ?");
             ps.setString(1, ordine.getStato());
             ps.setString(2, ordine.getIdOrdine());
             if(ps.executeUpdate() != 1)
                 throw new RuntimeException("UPDATE error.");
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void updateOrdineMatricola(Ordine ordine){
-        try(Connection con = ConPool.getConnection()){
-            PreparedStatement ps = con.prepareStatement("UPDATE ordine SET matricola = ? WHERE idOrdine = ?");
+    public void updateOrdineMatricola(final Ordine ordine){
+        try(final Connection con = ConPool.getConnection()){
+            final PreparedStatement ps = con.prepareStatement("UPDATE ordine SET matricola = ? WHERE idOrdine = ?");
             ps.setString(1, ordine.getMatricola());
             ps.setString(2, ordine.getIdOrdine());
             if(ps.executeUpdate() != 1)
                 throw new RuntimeException("UPDATE error.");
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void deleteOrdiniByEmail(String email){
-        List<Ordine> ordini = this.doRetrieveByUtente(email);
-        RigaOrdineDAO service = new RigaOrdineDAO();
-        for(Ordine o : ordini ){
+    public void deleteOrdiniByEmail(final String email){
+        final List<Ordine> ordini = this.doRetrieveByUtente(email);
+        final RigaOrdineDAO service = new RigaOrdineDAO();
+        for(final Ordine o : ordini ){
             service.deleteRigaOrdineByIdOrdine(o.getIdOrdine());
         }
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps =
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps =
                     con.prepareStatement("DELETE FROM ordine WHERE email=?");
             ps.setString(1, email);
             if(ps.executeUpdate() != 1)
                 throw new RuntimeException("DELETE error.");
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
     //aggiunto questo
-    public void deleteOrdine(String idOrdine){
-        RigaOrdineDAO service = new RigaOrdineDAO();
+    public void deleteOrdine(final String idOrdine){
+        final RigaOrdineDAO service = new RigaOrdineDAO();
         service.deleteRigaOrdineByIdOrdine(idOrdine);
 
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps =
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps =
                     con.prepareStatement("DELETE FROM ordine WHERE idOrdine=?");
             ps.setString(1, idOrdine);
             if(ps.executeUpdate() != 1)
                 throw new RuntimeException("DELETE error.");
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
     public List<String> doRetrivedAllByIdOrdini(){
-        List<String> idOrdini = new ArrayList<>();
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps =
-                    con.prepareStatement("SELECT * FROM ordine");
+        final List<String> idOrdini = new ArrayList<>();
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps =
+                    con.prepareStatement("SELECT idOrdine, costo, indirizzoSpedizione, citta, puntiOttenuti, puntiSpesi, dataArrivo, dataEffettuazione, stato, matricola, email FROM ordine");
 
-            ResultSet rs = ps.executeQuery();
+            final ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 idOrdini.add(rs.getString(1));
             }
             return idOrdini;
-        } catch(SQLException e){
+        } catch(final SQLException e){
             throw new RuntimeException(e);
         }
     }

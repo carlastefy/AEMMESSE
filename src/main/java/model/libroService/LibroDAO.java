@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LibroDAO {
-    public void doSave(Libro libro){
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps = con.prepareStatement(
+    public void doSave(final Libro libro){
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps = con.prepareStatement(
                     "INSERT INTO libro (isbn, titolo, genere, annoPubblicazione, prezzo, sconto, trama, immagine) VALUES(?,?,?,?,?,?,?,?)");
             ps.setString(1, libro.getIsbn());
             ps.setString(2, libro.getTitolo());
@@ -22,16 +22,16 @@ public class LibroDAO {
                 throw new RuntimeException("INSERT error.");
             }
 
-            for(Autore autore : libro.getAutori()){
+            for(final Autore autore : libro.getAutori()){
                 this.addAutore(libro.getIsbn(), autore);
             }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void deleteLibro(String isbn){
-        try (Connection con = ConPool.getConnection()) {
+    public void deleteLibro(final String isbn){
+        try (final Connection con = ConPool.getConnection()) {
             PreparedStatement ps =
                     con.prepareStatement("DELETE FROM rigacarrello WHERE isbn=?");
             ps.setString(1, isbn);
@@ -62,27 +62,27 @@ public class LibroDAO {
             ps.setString(1, isbn);
             if(ps.executeUpdate() != 1)
                 throw new RuntimeException("DELETE5 error.");
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void updateLibroSconto(Libro libro){
-        try(Connection con = ConPool.getConnection()){
-            PreparedStatement ps = con.prepareStatement("UPDATE libro SET sconto = ? WHERE isbn = ?");
+    public void updateLibroSconto(final Libro libro){
+        try(final Connection con = ConPool.getConnection()){
+            final PreparedStatement ps = con.prepareStatement("UPDATE libro SET sconto = ? WHERE isbn = ?");
             ps.setInt(1, libro.getSconto());
             ps.setString(2, libro.getIsbn());
             if(ps.executeUpdate() != 1)
                 throw new RuntimeException("UPDATE error.");
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
 
     }
 
-    public void updateLibro(Libro libro){
-        try(Connection con = ConPool.getConnection()){
-            PreparedStatement ps = con.prepareStatement("UPDATE libro SET titolo = ?, genere = ?, " +
+    public void updateLibro(final Libro libro){
+        try(final Connection con = ConPool.getConnection()){
+            final PreparedStatement ps = con.prepareStatement("UPDATE libro SET titolo = ?, genere = ?, " +
                     "annoPubblicazione = ?, prezzo = ?, sconto = ?, trama = ?, immagine = ? WHERE isbn = ?");
             ps.setString(1, libro.getTitolo());
             ps.setString(2, libro.getGenere());
@@ -94,32 +94,32 @@ public class LibroDAO {
             ps.setString(8, libro.getIsbn());
             if(ps.executeUpdate() != 1)
                 throw new RuntimeException("UPDATE error.");
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void updateDisponibile(Libro libro){
-        try(Connection con = ConPool.getConnection()){
-            PreparedStatement ps = con.prepareStatement("UPDATE libro SET disponibile = ? WHERE isbn = ?");
+    public void updateDisponibile(final Libro libro){
+        try(final Connection con = ConPool.getConnection()){
+            final PreparedStatement ps = con.prepareStatement("UPDATE libro SET disponibile = ? WHERE isbn = ?");
             ps.setBoolean(1, libro.isDisponibile());
             ps.setString(2, libro.getIsbn());
             if(ps.executeUpdate() != 1)
                 throw new RuntimeException("UPDATE error.");
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
     public List<Libro> doRetriveAll(){
-        List<Libro> libri = new ArrayList<>();
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps =
-                    con.prepareStatement("SELECT * FROM libro");
+        final List<Libro> libri = new ArrayList<>();
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps =
+                    con.prepareStatement("SELECT isbn, titolo, annoPubblicazione, prezzo, sconto, sconto, trama, immagine, disponibile FROM libro");
 
-            ResultSet rs = ps.executeQuery();
+            final ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                Libro p = new Libro();
+                final Libro p = new Libro();
                 p.setIsbn(rs.getString(1));
                 p.setTitolo(rs.getString(2));
                 p.setGenere(rs.getString(3));
@@ -133,19 +133,19 @@ public class LibroDAO {
                 libri.add(p);
             }
             return libri;
-        } catch(SQLException e){
+        } catch(final SQLException e){
             throw new RuntimeException(e);
         }
     }
 
-    public Libro doRetrieveById(String isbn) {
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps =
-                    con.prepareStatement("SELECT * FROM libro WHERE isbn=?");
+    public Libro doRetrieveById(final String isbn) {
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps =
+                    con.prepareStatement("SELECT isbn, titolo, annoPubblicazione, prezzo, sconto, sconto, trama, immagine, disponibile FROM libro WHERE isbn=?");
             ps.setString(1, isbn);
-            ResultSet rs = ps.executeQuery();
+            final ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                Libro p = new Libro();
+                final Libro p = new Libro();
                 p.setIsbn(rs.getString(1));
                 p.setTitolo(rs.getString(2));
                 p.setGenere(rs.getString(3));
@@ -159,87 +159,87 @@ public class LibroDAO {
                 return p;
             }
             return null;
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public List<Autore> getScrittura(String isbn){
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps =
+    public List<Autore> getScrittura(final String isbn){
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps =
                     con.prepareStatement("SELECT cf FROM scrittura WHERE isbn=?");
             ps.setString(1, isbn);
-            ResultSet rs = ps.executeQuery();
-            List<Autore> autori = new ArrayList<>();
+            final ResultSet rs = ps.executeQuery();
+            final List<Autore> autori = new ArrayList<>();
             while (rs.next()) {
-                String cf = rs.getString(1);
-                AutoreDAO service = new AutoreDAO();
+                final String cf = rs.getString(1);
+                final AutoreDAO service = new AutoreDAO();
                 autori.add(service.searchAutore(cf));
             }
             return autori;
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
-    public List<Reparto> getAppartenenzaReparto(String isbn){
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps =
+    public List<Reparto> getAppartenenzaReparto(final String isbn){
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps =
                     con.prepareStatement("SELECT idReparto FROM appartenenza WHERE isbn=?");
             ps.setString(1, isbn);
-            ResultSet rs = ps.executeQuery();
-            List<Reparto> reparti = new ArrayList<>();
+            final ResultSet rs = ps.executeQuery();
+            final List<Reparto> reparti = new ArrayList<>();
             while (rs.next()) {
-                int idReparto = rs.getInt(1);
-                RepartoDAO service = new RepartoDAO();
+                final int idReparto = rs.getInt(1);
+                final RepartoDAO service = new RepartoDAO();
                 reparti.add(service.doRetrieveById(idReparto));
             }
             return reparti;
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
-    public List<Sede> getPresenzaSede(String isbn){
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps =
+    public List<Sede> getPresenzaSede(final String isbn){
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps =
                     con.prepareStatement("SELECT idSede FROM presenza WHERE isbn=?");
             ps.setString(1, isbn);
-            ResultSet rs = ps.executeQuery();
-            List<Sede> sedi = new ArrayList<>();
+            final ResultSet rs = ps.executeQuery();
+            final List<Sede> sedi = new ArrayList<>();
             while (rs.next()) {
-                int idSede = rs.getInt(1);
-                SedeDAO service = new SedeDAO();
+                final int idSede = rs.getInt(1);
+                final SedeDAO service = new SedeDAO();
                 sedi.add(service.doRetrieveById(idSede));
             }
             return sedi;
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void deleteAutoreScrittura(String isbn, Autore autore){
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps =
+    public void deleteAutoreScrittura(final String isbn, final Autore autore){
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps =
                     con.prepareStatement("DELETE FROM scrittura WHERE isbn=? AND cf=?");
             ps.setString(1, isbn);
             ps.setString(2, autore.getCf());
 
-            AutoreDAO service = new AutoreDAO();
+            final AutoreDAO service = new AutoreDAO();
             service.deleteAutore(autore.getCf());
             if(ps.executeUpdate() != 1)
                 throw new RuntimeException("DELETE error.");
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
 
-    public void addAutore(String isbn, Autore autore){
-        try (Connection con = ConPool.getConnection()) {
-            AutoreDAO autoreService=new AutoreDAO();
+    public void addAutore(final String isbn, final Autore autore){
+        try (final Connection con = ConPool.getConnection()) {
+            final AutoreDAO autoreService=new AutoreDAO();
             if(autoreService.searchAutore(autore.getCf())==null)
                 autoreService.doSave(autore);
 
-            PreparedStatement ps = con.prepareStatement(
+            final PreparedStatement ps = con.prepareStatement(
                     "INSERT INTO scrittura (cf, isbn) VALUES(?,?)");
             ps.setString(1, autore.getCf());
             ps.setString(2, isbn);
@@ -247,21 +247,21 @@ public class LibroDAO {
             if (ps.executeUpdate() != 1) {
                 throw new RuntimeException("INSERT error.");
             }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public List<Libro> Search(String query) {
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM libro WHERE titolo LIKE ? OR isbn LIKE ?");
+    public List<Libro> Search(final String query) {
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps = con.prepareStatement("SELECT isbn, titolo, annoPubblicazione, prezzo, sconto, sconto, trama, immagine, disponibile FROM libro WHERE titolo LIKE ? OR isbn LIKE ?");
             ps.setString(1, "%" + query + "%");
             ps.setString(2, query + "%");
 
-            ResultSet rs = ps.executeQuery();
-            List<Libro> libri = new ArrayList<>();
+            final ResultSet rs = ps.executeQuery();
+            final List<Libro> libri = new ArrayList<>();
             while (rs.next()) {
-                Libro p = new Libro();
+                final Libro p = new Libro();
                 p.setIsbn(rs.getString(1));
                 p.setTitolo(rs.getString(2));
                 p.setGenere(rs.getString(3));
@@ -275,7 +275,7 @@ public class LibroDAO {
                 libri.add(p);
             }
             return libri;
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }

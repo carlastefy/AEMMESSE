@@ -13,9 +13,9 @@ import java.util.List;
 
 public class RigaOrdineDAO {
 
-    public void doSave(RigaOrdine rigaOrdine){
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps = con.prepareStatement(
+    public void doSave(final RigaOrdine rigaOrdine){
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps = con.prepareStatement(
                     "INSERT INTO rigaordine (idOrdine, isbn, prezzoUnitario, quantita) VALUES(?,?,?, ?)");
             ps.setString(1, rigaOrdine.getIdOrdine());
             ps.setString(2, rigaOrdine.getLibro().getIsbn());
@@ -24,22 +24,22 @@ public class RigaOrdineDAO {
             if (ps.executeUpdate() != 1) {
                 throw new RuntimeException("INSERT error.");
             }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
-    public List<RigaOrdine> doRetrivedByOrdine(String idOrdine) {
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps =
-                    con.prepareStatement("SELECT * FROM rigaordine WHERE idOrdine=?");
+    public List<RigaOrdine> doRetrivedByOrdine(final String idOrdine) {
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps =
+                    con.prepareStatement("SELECT idOrdine, isbn, prezzoUnitario, quantita FROM rigaordine WHERE idOrdine=?");
             ps.setString(1, idOrdine);
-            ResultSet rs = ps.executeQuery();
-            List<RigaOrdine> lista = new ArrayList<>();
+            final ResultSet rs = ps.executeQuery();
+            final List<RigaOrdine> lista = new ArrayList<>();
             while (rs.next()) {
-                RigaOrdine p = new RigaOrdine();
-                LibroDAO libroService= new LibroDAO();
+                final RigaOrdine p = new RigaOrdine();
+                final LibroDAO libroService= new LibroDAO();
                 p.setIdOrdine(rs.getString(1));
-                String isbn=rs.getString(2);
+                final String isbn=rs.getString(2);
                 p.setLibro(libroService.doRetrieveById(isbn));
                 //p.setIsbn(rs.getString(2));
                 p.setPrezzoUnitario(rs.getDouble(3));
@@ -47,21 +47,21 @@ public class RigaOrdineDAO {
                 lista.add(p);
             }
             return lista;
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public RigaOrdine doRetriveById(String idOrdine, String isbn){
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps =
-                    con.prepareStatement("SELECT * FROM rigaordine WHERE idOrdine=? AND isbn=?");
+    public RigaOrdine doRetriveById(final String idOrdine, final String isbn){
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps =
+                    con.prepareStatement("SELECT idOrdine, isbn, prezzoUnitario, quantita FROM rigaordine WHERE idOrdine=? AND isbn=?");
             ps.setString(1, idOrdine);
             ps.setString(2, isbn);
-            ResultSet rs = ps.executeQuery();
+            final ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                RigaOrdine p = new RigaOrdine();
-                LibroDAO libroService= new LibroDAO();
+                final RigaOrdine p = new RigaOrdine();
+                final LibroDAO libroService= new LibroDAO();
                 p.setIdOrdine(rs.getString(1));
                 p.setLibro(libroService.doRetrieveById(isbn));
                 //p.setIsbn(rs.getString(2));
@@ -70,31 +70,31 @@ public class RigaOrdineDAO {
                 return p;
             }
             return null;
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
-    public void deleteRigaOrdine(String isbn, String idOrdine){
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps =
+    public void deleteRigaOrdine(final String isbn, final String idOrdine){
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps =
                     con.prepareStatement("DELETE FROM rigaordine WHERE idOrdine=? AND isbn =?");
             ps.setString(1, idOrdine);
             ps.setString(2, isbn);
             if(ps.executeUpdate() != 1)
                 throw new RuntimeException("DELETE error.");
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void deleteRigaOrdineByIdOrdine(String idOrdine){
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps =
+    public void deleteRigaOrdineByIdOrdine(final String idOrdine){
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps =
                     con.prepareStatement("DELETE FROM rigaordine WHERE idOrdine=?");
             ps.setString(1, idOrdine);
             if(ps.executeUpdate() < 1)
                 throw new RuntimeException("DELETE error.");
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }

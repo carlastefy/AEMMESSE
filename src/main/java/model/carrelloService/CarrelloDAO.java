@@ -13,9 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CarrelloDAO {
-    public void doSave(Carrello carrello){
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps = con.prepareStatement(
+    public void doSave(final Carrello carrello){
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps = con.prepareStatement(
                     "INSERT INTO carrello (idCarrello, totale, email) VALUES(?,?,?)");
             ps.setString(1, carrello.getIdCarrello());
             ps.setDouble(2, carrello.getTotale());
@@ -24,45 +24,45 @@ public class CarrelloDAO {
                 throw new RuntimeException("INSERT error.");
             }
 
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void deleteCarrello(String idCarrello){
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps =
+    public void deleteCarrello(final String idCarrello){
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps =
                     con.prepareStatement("DELETE FROM carrello WHERE idCarrello=?");
             ps.setString(1, idCarrello);
             if(ps.executeUpdate() != 1)
                 throw new RuntimeException("DELETE error.");
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void updateCarrello(Carrello carrello){
-        try(Connection con = ConPool.getConnection()){
-            PreparedStatement ps = con.prepareStatement("UPDATE carrello SET totale = ? WHERE idCarrello = ?");
+    public void updateCarrello(final Carrello carrello){
+        try(final Connection con = ConPool.getConnection()){
+            final PreparedStatement ps = con.prepareStatement("UPDATE carrello SET totale = ? WHERE idCarrello = ?");
             ps.setDouble(1, carrello.getTotale());
             ps.setString(2, carrello.getIdCarrello());
             if(ps.executeUpdate() != 1)
                 throw new RuntimeException("UPDATE error.");
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
 
     }
 
-    public Carrello doRetriveById(String idCarrello){
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps =
-                    con.prepareStatement("SELECT * FROM carrello WHERE idCarrello=?");
+    public Carrello doRetriveById(final String idCarrello){
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps =
+                    con.prepareStatement("SELECT idCarrello, totale, email FROM carrello WHERE idCarrello=?");
             ps.setString(1, idCarrello);
-            ResultSet rs = ps.executeQuery();
+            final ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                Carrello carrello = new Carrello();
-                RigaCarrelloDAO rigaService = new RigaCarrelloDAO();
+                final Carrello carrello = new Carrello();
+                final RigaCarrelloDAO rigaService = new RigaCarrelloDAO();
                 carrello.setIdCarrello(idCarrello);
                 carrello.setTotale(rs.getDouble(2));
                 carrello.setEmail(rs.getString(3));
@@ -70,19 +70,19 @@ public class CarrelloDAO {
                 return carrello;
             }
             return null;
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
-    public Carrello doRetriveByUtente(String email){
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps =
-                    con.prepareStatement("SELECT * FROM carrello WHERE email=?");
+    public Carrello doRetriveByUtente(final String email){
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps =
+                    con.prepareStatement("SELECT idCarrello, totale, email FROM carrello WHERE email=?");
             ps.setString(1, email);
-            ResultSet rs = ps.executeQuery();
+            final ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                Carrello carrello = new Carrello();
-                RigaCarrelloDAO rigaService = new RigaCarrelloDAO();
+                final Carrello carrello = new Carrello();
+                final RigaCarrelloDAO rigaService = new RigaCarrelloDAO();
                 carrello.setIdCarrello(rs.getString(1));
                 carrello.setTotale(rs.getDouble(2));
                 carrello.setEmail(rs.getString(3));
@@ -90,22 +90,22 @@ public class CarrelloDAO {
                 return carrello;
             }
             return null;
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
     public List<String> doRetrivedAllIdCarrelli(){
-        List<String>  idCarrello = new ArrayList<>();
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps =
-                    con.prepareStatement("SELECT * FROM carrello");
+        final List<String>  idCarrello = new ArrayList<>();
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps =
+                    con.prepareStatement("SELECT idCarrello, totale, email FROM carrello");
 
-            ResultSet rs = ps.executeQuery();
+            final ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 idCarrello.add(rs.getString(1));
             }
             return idCarrello;
-        } catch(SQLException e){
+        } catch(final SQLException e){
             throw new RuntimeException(e);
         }
     }

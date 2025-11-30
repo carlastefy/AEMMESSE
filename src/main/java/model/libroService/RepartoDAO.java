@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RepartoDAO {
-    public void doSave(Reparto reparto){
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps = con.prepareStatement(
+    public void doSave(final Reparto reparto){
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps = con.prepareStatement(
                     "INSERT INTO reparto (nome,descrizione,immagine) VALUES(?,?,?)", Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, reparto.getNome());
             ps.setString(2, reparto.getDescrizione());
@@ -18,23 +18,23 @@ public class RepartoDAO {
             if (ps.executeUpdate() != 1) {
                 throw new RuntimeException("INSERT error.");
             }
-            ResultSet rs = ps.getGeneratedKeys();
+            final ResultSet rs = ps.getGeneratedKeys();
             rs.next();
-            int id = rs.getInt(1);
+            final int id = rs.getInt(1);
             reparto.setIdReparto(id);
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void deleteReparto(int idReparto){
-        try (Connection con = ConPool.getConnection()) {
+    public void deleteReparto(final int idReparto){
+        try (final Connection con = ConPool.getConnection()) {
 
             //prima cancello da appartenenza (che ha riferimenti a reparto) solo se ci sono elementi
-            List<Libro> l = this.getAppartenenza(idReparto);
-            Reparto r = this.doRetrieveById(idReparto);
+            final List<Libro> l = this.getAppartenenza(idReparto);
+            final Reparto r = this.doRetrieveById(idReparto);
             if (l!=null && !l.isEmpty()) {
-                PreparedStatement ps =
+                final PreparedStatement ps =
                     con.prepareStatement("DELETE FROM appartenenza WHERE idReparto=?");
                 ps.setInt(1, idReparto);
                 r.setLibri(null);
@@ -42,51 +42,51 @@ public class RepartoDAO {
                     throw new RuntimeException("DELETE error from appartenenza.");
             }
             //poi elimino il reparto in questione
-            PreparedStatement ps = con.prepareStatement("DELETE FROM reparto WHERE idReparto=?");
+            final PreparedStatement ps = con.prepareStatement("DELETE FROM reparto WHERE idReparto=?");
             ps.setInt(1, idReparto);
             if(ps.executeUpdate() != 1)
                 throw new RuntimeException("DELETE error from reparto.");
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void updateReparto(Reparto reparto){
-        try(Connection con = ConPool.getConnection()){
-            PreparedStatement ps = con.prepareStatement("UPDATE reparto SET descrizione = ?, immagine = ? WHERE idReparto = ?");
+    public void updateReparto(final Reparto reparto){
+        try(final Connection con = ConPool.getConnection()){
+            final PreparedStatement ps = con.prepareStatement("UPDATE reparto SET descrizione = ?, immagine = ? WHERE idReparto = ?");
             ps.setString(1, reparto.getDescrizione());
             ps.setString(2, reparto.getImmagine());
             ps.setInt(3, reparto.getIdReparto());
 
             if(ps.executeUpdate() != 1)
                 throw new RuntimeException("UPDATE error.");
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
 
     }
 
-    public void removeLibroReparto(int idReparto, String isbn){
-        try(Connection con = ConPool.getConnection()){
-            PreparedStatement ps = con.prepareStatement("DELETE FROM appartenenza WHERE idReparto=? AND isbn = ?");
+    public void removeLibroReparto(final int idReparto, final String isbn){
+        try(final Connection con = ConPool.getConnection()){
+            final PreparedStatement ps = con.prepareStatement("DELETE FROM appartenenza WHERE idReparto=? AND isbn = ?");
             ps.setInt(1,idReparto);
             ps.setString(2, isbn);
 
-            Reparto p = this.doRetrieveById(idReparto);
-            LibroDAO libroService = new LibroDAO();
-            Libro l = libroService.doRetrieveById(isbn);
+            final Reparto p = this.doRetrieveById(idReparto);
+            final LibroDAO libroService = new LibroDAO();
+            final Libro l = libroService.doRetrieveById(isbn);
             p.getLibri().remove(l); //ho tolto il contains perchè credo lo faccia da solo.
 
             if(ps.executeUpdate() != 1)
                 throw new RuntimeException("DELETE error.");
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
 
     }
-    public void aggiungiLibroReparto(Reparto reparto, String isbn){
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps = con.prepareStatement(
+    public void aggiungiLibroReparto(final Reparto reparto, final String isbn){
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps = con.prepareStatement(
                     "INSERT INTO appartenenza (idReparto, isbn) VALUES(?, ?)");
             ps.setInt(1, reparto.getIdReparto());
             ps.setString(2, isbn);
@@ -94,23 +94,23 @@ public class RepartoDAO {
             if (ps.executeUpdate() != 1) {
                 throw new RuntimeException("INSERT error.");
             }
-            LibroDAO libroService = new LibroDAO();
+            final LibroDAO libroService = new LibroDAO();
             reparto.getLibri().add(libroService.doRetrieveById(isbn));
 
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
     public List<Reparto> doRetrivedAll(){
-        List<Reparto> reparti = new ArrayList<>();
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps =
-                    con.prepareStatement("SELECT * FROM reparto");
+        final List<Reparto> reparti = new ArrayList<>();
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps =
+                    con.prepareStatement("SELECT idReparto, nome, descrizione, immagine FROM reparto");
 
-            ResultSet rs = ps.executeQuery();
+            final ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                Reparto p = new Reparto();
+                final Reparto p = new Reparto();
                 p.setIdReparto(rs.getInt(1));
                 p.setNome(rs.getString(2));
                 p.setDescrizione(rs.getString(3));
@@ -119,19 +119,19 @@ public class RepartoDAO {
                 reparti.add(p);
             }
             return reparti;
-        } catch(SQLException e){
+        } catch(final SQLException e){
             throw new RuntimeException(e);
         }
     }
 
-    public Reparto doRetrieveById(int idReparto) {
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps =
-                    con.prepareStatement("SELECT * FROM reparto WHERE idReparto=?");
+    public Reparto doRetrieveById(final int idReparto) {
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps =
+                    con.prepareStatement("SELECT idReparto, nome, descrizione, immagine FROM reparto WHERE idReparto=?");
             ps.setInt(1, idReparto);
-            ResultSet rs = ps.executeQuery();
+            final ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                Reparto p = new Reparto();
+                final Reparto p = new Reparto();
                 p.setIdReparto(rs.getInt(1));
                 p.setNome(rs.getString(2));
                 p.setDescrizione(rs.getString(3));
@@ -140,52 +140,52 @@ public class RepartoDAO {
                 return p;
             }
             return null;
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public List<Libro> getAppartenenza(int idReparto){
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps =
+    public List<Libro> getAppartenenza(final int idReparto){
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps =
                     con.prepareStatement("SELECT isbn FROM appartenenza WHERE idReparto=?");
             ps.setInt(1, idReparto);
-            List<Libro> lista=new ArrayList<>();
-            ResultSet rs = ps.executeQuery();
+            final List<Libro> lista=new ArrayList<>();
+            final ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                String isbn = rs.getString(1);
-                LibroDAO p = new LibroDAO();
-                Libro libro=p.doRetrieveById(isbn);
+                final String isbn = rs.getString(1);
+                final LibroDAO p = new LibroDAO();
+                final Libro libro=p.doRetrieveById(isbn);
                 lista.add(libro);
             }
             return lista;
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
-    public void deleteFromAppartenenzaLibro(int idReparto, String isbn){
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps =
+    public void deleteFromAppartenenzaLibro(final int idReparto, final String isbn){
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps =
                     con.prepareStatement("DELETE FROM appartenenza WHERE idReparto=? AND isbn=?");
             ps.setInt(1, idReparto);
             ps.setString(2, isbn);
             if(ps.executeUpdate() != 1)
                 throw new RuntimeException("DELETE error.");
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void doSaveAppartenenza(int idReparto, String isbn){
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps = con.prepareStatement(
+    public void doSaveAppartenenza(final int idReparto, final String isbn){
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps = con.prepareStatement(
                     "INSERT INTO appartenenza (idReparto, isbn) VALUES(?,?)");
             ps.setInt(1, idReparto);
             ps.setString(2, isbn);
             if (ps.executeUpdate() != 1) {
                 throw new RuntimeException("INSERT error.");
             }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }

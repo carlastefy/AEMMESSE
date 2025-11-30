@@ -9,9 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SedeDAO {
-    public void doSave(Sede sede){
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps = con.prepareStatement(
+    public void doSave(final Sede sede){
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps = con.prepareStatement(
                     "INSERT INTO sede (citta, via, numeroCivico, cap) VALUES(?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, sede.getCitta());
             ps.setString(2, sede.getVia());
@@ -20,22 +20,22 @@ public class SedeDAO {
             if (ps.executeUpdate() != 1) {
                 throw new RuntimeException("INSERT error.");
             }
-            ResultSet rs = ps.getGeneratedKeys();
+            final ResultSet rs = ps.getGeneratedKeys();
             rs.next();
-            int id = rs.getInt(1);
+            final int id = rs.getInt(1);
             sede.setIdSede(id);
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void deleteSede(int idSede){
-        try (Connection con = ConPool.getConnection()) {
+    public void deleteSede(final int idSede){
+        try (final Connection con = ConPool.getConnection()) {
             //prima cancello da appartenenza (che ha riferimenti a reparto) solo se ci sono elementi
-            List<Libro> l = this.getPresenza(idSede);
-            Sede s = this.doRetrieveById(idSede);
+            final List<Libro> l = this.getPresenza(idSede);
+            final Sede s = this.doRetrieveById(idSede);
             if (l!=null && !l.isEmpty()) {
-                PreparedStatement ps =
+                final PreparedStatement ps =
                         con.prepareStatement("DELETE FROM presenza WHERE idSede=?");
                 ps.setInt(1, idSede);
                 s.setLibri(null);
@@ -43,19 +43,19 @@ public class SedeDAO {
                     throw new RuntimeException("DELETE error from appartenenza.");
             }
             //poi elimino il reparto in questione
-            PreparedStatement ps =
+            final PreparedStatement ps =
                     con.prepareStatement("DELETE FROM sede WHERE idSede=?");
             ps.setInt(1, idSede);
             if(ps.executeUpdate() != 1)
                 throw new RuntimeException("DELETE error.");
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void updateSede(Sede sede){
-        try(Connection con = ConPool.getConnection()){
-            PreparedStatement ps = con.prepareStatement("UPDATE sede SET citta = ?, via = ?, numeroCivico = ?, cap = ? WHERE idSede = ?");
+    public void updateSede(final Sede sede){
+        try(final Connection con = ConPool.getConnection()){
+            final PreparedStatement ps = con.prepareStatement("UPDATE sede SET citta = ?, via = ?, numeroCivico = ?, cap = ? WHERE idSede = ?");
             ps.setString(1, sede.getCitta());
             ps.setString(2, sede.getVia());
             ps.setInt(3, sede.getCivico());
@@ -63,34 +63,34 @@ public class SedeDAO {
             ps.setInt(5, sede.getIdSede());
             if(ps.executeUpdate() != 1)
                 throw new RuntimeException("UPDATE error.");
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
 
     }
 
-    public void removeLibroSede(int idSede, String isbn){
-        try(Connection con = ConPool.getConnection()){
-            PreparedStatement ps = con.prepareStatement("DELETE FROM presenza WHERE idSede=? AND isbn = ?");
+    public void removeLibroSede(final int idSede, final String isbn){
+        try(final Connection con = ConPool.getConnection()){
+            final PreparedStatement ps = con.prepareStatement("DELETE FROM presenza WHERE idSede=? AND isbn = ?");
             ps.setInt(1,idSede);
             ps.setString(2, isbn);
 
-            Sede p = this.doRetrieveById(idSede);
-            LibroDAO libroService = new LibroDAO();
-            Libro l = libroService.doRetrieveById(isbn);
+            final Sede p = this.doRetrieveById(idSede);
+            final LibroDAO libroService = new LibroDAO();
+            final Libro l = libroService.doRetrieveById(isbn);
             p.getLibri().remove(l); //ho tolto il contains perchè credo lo faccia da solo.
 
             if(ps.executeUpdate() != 1)
                 throw new RuntimeException("DELETE error.");
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
 
     }
 
-    public void addLibroSede(Sede sede, String isbn){
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps = con.prepareStatement(
+    public void addLibroSede(final Sede sede, final String isbn){
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps = con.prepareStatement(
                     "INSERT INTO presenza (idSede, isbn) VALUES(?, ?)");
             ps.setInt(1, sede.getIdSede());
             ps.setString(2, isbn);
@@ -98,23 +98,23 @@ public class SedeDAO {
             if (ps.executeUpdate() != 1) {
                 throw new RuntimeException("INSERT error.");
             }
-            LibroDAO libroService = new LibroDAO();
+            final LibroDAO libroService = new LibroDAO();
             sede.getLibri().add(libroService.doRetrieveById(isbn));
 
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
     public List<Sede> doRetrivedAll(){
-        List<Sede> sedi = new ArrayList<>();
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps =
-                    con.prepareStatement("SELECT * FROM sede");
+        final List<Sede> sedi = new ArrayList<>();
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps =
+                    con.prepareStatement("SELECT idSede, citta, via, numeroCivico, cap FROM sede");
 
-            ResultSet rs = ps.executeQuery();
+            final ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                Sede p = new Sede();
+                final Sede p = new Sede();
                 p.setIdSede(rs.getInt(1));
                 p.setCitta(rs.getString(2));
                 p.setVia(rs.getString(3));
@@ -124,19 +124,19 @@ public class SedeDAO {
                 sedi.add(p);
             }
             return sedi;
-        } catch(SQLException e){
+        } catch(final SQLException e){
             throw new RuntimeException(e);
         }
     }
 
-    public Sede doRetrieveById(int idSede) {
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps =
-                    con.prepareStatement("SELECT * FROM sede WHERE idSede=?");
+    public Sede doRetrieveById(final int idSede) {
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps =
+                    con.prepareStatement("SELECT idSede, citta, via, numeroCIvico, cap FROM sede WHERE idSede=?");
             ps.setInt(1, idSede);
-            ResultSet rs = ps.executeQuery();
+            final ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                Sede p = new Sede();
+                final Sede p = new Sede();
                 p.setIdSede(rs.getInt(1));
                 p.setCitta(rs.getString(2));
                 p.setVia(rs.getString(3));
@@ -146,52 +146,52 @@ public class SedeDAO {
                 return p;
             }
             return null;
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public List<Libro> getPresenza(int idSede){
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps =
+    public List<Libro> getPresenza(final int idSede){
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps =
                     con.prepareStatement("SELECT isbn FROM presenza WHERE idSede=?");
             ps.setInt(1, idSede);
-            List<Libro> lista=new ArrayList<>();
-            ResultSet rs = ps.executeQuery();
+            final List<Libro> lista=new ArrayList<>();
+            final ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                String isbn = rs.getString(1);
-                LibroDAO p = new LibroDAO();
-                Libro libro=p.doRetrieveById(isbn);
+                final String isbn = rs.getString(1);
+                final LibroDAO p = new LibroDAO();
+                final Libro libro=p.doRetrieveById(isbn);
                 lista.add(libro);
             }
             return lista;
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
-    public void deleteFromPresenzaLibro(int idSede, String isbn){
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps =
+    public void deleteFromPresenzaLibro(final int idSede, final String isbn){
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps =
                     con.prepareStatement("DELETE FROM presenza WHERE idSede=? AND isbn=?");
             ps.setInt(1, idSede);
             ps.setString(2, isbn);
             if(ps.executeUpdate() != 1)
                 throw new RuntimeException("DELETE error.");
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void doSavePresenza(int idSede, String isbn){
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps = con.prepareStatement(
+    public void doSavePresenza(final int idSede, final String isbn){
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps = con.prepareStatement(
                     "INSERT INTO presenza (idSede, isbn) VALUES(?,?)");
             ps.setInt(1, idSede);
             ps.setString(2, isbn);
             if (ps.executeUpdate() != 1) {
                 throw new RuntimeException("INSERT error.");
             }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }

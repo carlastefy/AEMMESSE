@@ -14,39 +14,39 @@ import java.util.List;
 
 public class RigaCarrelloDAO {
 
-    public List<RigaCarrello> doRetrieveByIdCarrello(String idCarrello) {
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps =
-                    con.prepareStatement("SELECT * FROM rigacarrello WHERE idCarrello=?");
+    public List<RigaCarrello> doRetrieveByIdCarrello(final String idCarrello) {
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps =
+                    con.prepareStatement("SELECT idCarrello, isbn, quantita FROM rigacarrello WHERE idCarrello=?");
             ps.setString(1, idCarrello);
-            ResultSet rs = ps.executeQuery();
-            List<RigaCarrello> lista = new ArrayList<>();
+            final ResultSet rs = ps.executeQuery();
+            final List<RigaCarrello> lista = new ArrayList<>();
             while (rs.next()) {
-                RigaCarrello p = new RigaCarrello();
-                LibroDAO libroService= new LibroDAO();
+                final RigaCarrello p = new RigaCarrello();
+                final LibroDAO libroService= new LibroDAO();
                 p.setIdCarrello(rs.getString(1));
-                String isbn=rs.getString(2);
+                final String isbn=rs.getString(2);
                 p.setLibro(libroService.doRetrieveById(isbn));
                 //p.setIsbn(rs.getString(2));
                 p.setQuantita(rs.getInt(3));
                 lista.add(p);
             }
             return lista;
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public RigaCarrello doRetriveById(String idCarrello, String isbn){
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps =
-                    con.prepareStatement("SELECT * FROM rigacarrello WHERE idCarrello=? AND isbn=?");
+    public RigaCarrello doRetriveById(final String idCarrello, final String isbn){
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps =
+                    con.prepareStatement("SELECT idCarello, isbn, quantita FROM rigacarrello WHERE idCarrello=? AND isbn=?");
             ps.setString(1, idCarrello);
             ps.setString(2, isbn);
-            ResultSet rs = ps.executeQuery();
+            final ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                RigaCarrello p = new RigaCarrello();
-                LibroDAO libroService= new LibroDAO();
+                final RigaCarrello p = new RigaCarrello();
+                final LibroDAO libroService= new LibroDAO();
                 p.setIdCarrello(rs.getString(1));
                 p.setLibro(libroService.doRetrieveById(isbn));
                 //p.setIsbn(rs.getString(2));
@@ -54,13 +54,13 @@ public class RigaCarrelloDAO {
                 return p;
             }
             return null;
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
-    public void doSave(RigaCarrello rigaCarrello){
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps = con.prepareStatement(
+    public void doSave(final RigaCarrello rigaCarrello){
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps = con.prepareStatement(
                     "INSERT INTO rigacarrello (idCarrello, isbn, quantita) VALUES(?,?,?)");
             ps.setString(1, rigaCarrello.getIdCarrello());
             ps.setString(2, rigaCarrello.getLibro().getIsbn());
@@ -68,45 +68,45 @@ public class RigaCarrelloDAO {
             if (ps.executeUpdate() != 1) {
                 throw new RuntimeException("INSERT error.");
             }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
-    public void deleteRigaCarrello(String isbn, String idCarrello){
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps =
+    public void deleteRigaCarrello(final String isbn, final String idCarrello){
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps =
                     con.prepareStatement("DELETE FROM rigacarrello WHERE idCarrello=? AND isbn =?");
             ps.setString(1, idCarrello);
             ps.setString(2, isbn);
             if(ps.executeUpdate() != 1)
                 throw new RuntimeException("DELETE error.");
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void deleteRigheCarrelloByIdCarrello(String idCarrello){
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps =
+    public void deleteRigheCarrelloByIdCarrello(final String idCarrello){
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps =
                     con.prepareStatement("DELETE FROM rigacarrello WHERE idCarrello=?");
             ps.setString(1, idCarrello);
             if(ps.executeUpdate() < 1)
                 throw new RuntimeException("UPDATE error.");
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
 
-    public void updateQuantita(RigaCarrello rigaCarrello){
-        try(Connection con = ConPool.getConnection()){
-            PreparedStatement ps = con.prepareStatement("UPDATE rigaCarrello SET quantita = ? WHERE isbn = ? AND idCarrello=?");
+    public void updateQuantita(final RigaCarrello rigaCarrello){
+        try(final Connection con = ConPool.getConnection()){
+            final PreparedStatement ps = con.prepareStatement("UPDATE rigaCarrello SET quantita = ? WHERE isbn = ? AND idCarrello=?");
             ps.setInt(1,rigaCarrello.getQuantita());
             ps.setString(2, rigaCarrello.getLibro().getIsbn());
             ps.setString(3, rigaCarrello.getIdCarrello());
             if(ps.executeUpdate() != 1)
                 throw new RuntimeException("UPDATE error.");
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
 

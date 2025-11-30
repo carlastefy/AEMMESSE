@@ -11,9 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TesseraDAO {
-    public void doSave(Tessera tessera){
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps = con.prepareStatement(
+    public void doSave(final Tessera tessera){
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps = con.prepareStatement(
                     "INSERT INTO tessera (numero, dataCreazione, dataScadenza, email) VALUES(?,?,?,?)");
             ps.setString(1, tessera.getNumero());
             ps.setDate(2, java.sql.Date.valueOf(tessera.getDataCreazione()));
@@ -25,45 +25,45 @@ public class TesseraDAO {
             }
 
             tessera.setPunti(this.doRetrieveById(tessera.getNumero()).getPunti());
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void deleteTessera(String numero){
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps =
+    public void deleteTessera(final String numero){
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps =
                     con.prepareStatement("DELETE FROM tessera WHERE numero=?");
             ps.setString(1, numero);
             if(ps.executeUpdate() != 1)
                 throw new RuntimeException("DELETE error.");
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void updateTessera(Tessera tessera){
-        try(Connection con = ConPool.getConnection()){
-            PreparedStatement ps = con.prepareStatement("UPDATE tessera SET punti = ? WHERE numero = ?");
+    public void updateTessera(final Tessera tessera){
+        try(final Connection con = ConPool.getConnection()){
+            final PreparedStatement ps = con.prepareStatement("UPDATE tessera SET punti = ? WHERE numero = ?");
             ps.setInt(1, tessera.getPunti());
             ps.setString(2, tessera.getNumero());
             if(ps.executeUpdate() != 1)
                 throw new RuntimeException("UPDATE error.");
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
 
     }
 
     public List<Tessera> doRetrivedAll(){
-        List<Tessera> tessere = new ArrayList<>();
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps =
-                    con.prepareStatement("SELECT * FROM tessera");
+        final List<Tessera> tessere = new ArrayList<>();
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps =
+                    con.prepareStatement("SELECT nuemero, dataCreazione, dataScadenza, punti, email FROM tessera");
 
-            ResultSet rs = ps.executeQuery();
+            final ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                Tessera p = new Tessera();
+                final Tessera p = new Tessera();
                 p.setNumero(rs.getString(1));
                 p.setDataCreazione(rs.getDate(2).toLocalDate());
                 p.setDataScadenza(rs.getDate(3).toLocalDate());
@@ -72,34 +72,34 @@ public class TesseraDAO {
                 tessere.add(p);
             }
             return tessere;
-        } catch(SQLException e){
+        } catch(final SQLException e){
             throw new RuntimeException(e);
         }
     }
     public List<String> doRetrivedAllByNumero(){
-        List<String> numeri = new ArrayList<>();
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps =
-                    con.prepareStatement("SELECT * FROM tessera");
+        final List<String> numeri = new ArrayList<>();
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps =
+                    con.prepareStatement("SELECT nuemero, dataCreazione, dataScadenza, punti, email FROM tessera");
 
-            ResultSet rs = ps.executeQuery();
+            final ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 numeri.add(rs.getString(1));
             }
             return numeri;
-        } catch(SQLException e){
+        } catch(final SQLException e){
             throw new RuntimeException(e);
         }
     }
 
-    public Tessera doRetrieveById(String numero) {
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps =
-                    con.prepareStatement("SELECT * FROM tessera WHERE numero=?");
+    public Tessera doRetrieveById(final String numero) {
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps =
+                    con.prepareStatement("SELECT nuemero, dataCreazione, dataScadenza, punti, email FROM tessera WHERE numero=?");
             ps.setString(1, numero);
-            ResultSet rs = ps.executeQuery();
+            final ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                Tessera p = new Tessera();
+                final Tessera p = new Tessera();
                 p.setNumero(rs.getString(1));
                 p.setDataCreazione(rs.getDate(2).toLocalDate());
                 p.setDataScadenza(rs.getDate(3).toLocalDate());
@@ -108,19 +108,19 @@ public class TesseraDAO {
                 return p;
             }
             return null;
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public Tessera doRetrieveByEmail(String email) {
-        try (Connection con = ConPool.getConnection()) {
-            PreparedStatement ps =
-                    con.prepareStatement("SELECT * FROM tessera WHERE email=?");
+    public Tessera doRetrieveByEmail(final String email) {
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps =
+                    con.prepareStatement("SELECT nuemero, dataCreazione, dataScadenza, punti, email FROM tessera WHERE email=?");
             ps.setString(1, email);
-            ResultSet rs = ps.executeQuery();
+            final ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                Tessera p = new Tessera();
+                final Tessera p = new Tessera();
                 p.setNumero(rs.getString(1));
                 p.setDataCreazione(rs.getDate(2).toLocalDate());
                 p.setDataScadenza(rs.getDate(3).toLocalDate());
@@ -129,7 +129,7 @@ public class TesseraDAO {
                 return p;
             }
             return null;
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
