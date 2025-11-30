@@ -21,23 +21,23 @@ import java.util.List;
 
 @WebServlet("/mostra-libro")
 public class MostraLibroServlet extends HttpServlet {
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
 
-        String isbn=request.getParameter("isbn");
-        HttpSession session= request.getSession();
-        Utente utente = (Utente) session.getAttribute("utente");
+        final String isbn=request.getParameter("isbn");
+        final HttpSession session= request.getSession();
+        final Utente utente = (Utente) session.getAttribute("utente");
         if(Validator.checkIfUserAdmin(utente)) {
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/homepageAdmin.jsp");
+            final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/homepageAdmin.jsp");
             dispatcher.forward(request, response);
         }
-        Carrello carrello= (Carrello) session.getAttribute("carrello");
-        WishList wishList = (WishList) session.getAttribute("wishList");
+        final Carrello carrello= (Carrello) session.getAttribute("carrello");
+        final WishList wishList = (WishList) session.getAttribute("wishList");
         Libro libro  =new Libro();
-        LibroDAO libroService= new LibroDAO();
+        final LibroDAO libroService= new LibroDAO();
         boolean presenza=false;
         if(carrello!=null){
-            for(RigaCarrello riga: carrello.getRigheCarrello()){
-                Libro libroRiga= riga.getLibro();
+            for(final RigaCarrello riga: carrello.getRigheCarrello()){
+                final Libro libroRiga= riga.getLibro();
                 if(libroRiga.getIsbn().equals(isbn)) {
                     libro = libroRiga;
                     presenza=true;
@@ -47,7 +47,7 @@ public class MostraLibroServlet extends HttpServlet {
             }
         }
         else if(wishList!=null){
-            for(Libro libro1: wishList.getLibri()){
+            for(final Libro libro1: wishList.getLibri()){
                 if(libro1.getIsbn().equals(isbn)){
                     libro = libro1;
                     presenza = true;
@@ -59,13 +59,13 @@ public class MostraLibroServlet extends HttpServlet {
             libro=libroService.doRetrieveById(isbn);
         }
 
-        List<Autore> autori= libroService.getScrittura(isbn);
+        final List<Autore> autori= libroService.getScrittura(isbn);
 
 
         request.setAttribute("libro", libro);
         request.setAttribute("autori", autori);
 
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/mostraLibro.jsp");
+        final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/mostraLibro.jsp");
         dispatcher.forward(request, response);
 
     }

@@ -30,6 +30,7 @@ public class HomePageServlet extends HttpServlet {
         if(Validator.checkIfUserAdmin(utente)) {
             final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/homepageAdmin.jsp");
             dispatcher.forward(request, response);
+            return;
         }
 
 
@@ -41,10 +42,13 @@ public class HomePageServlet extends HttpServlet {
 
         if(request.getAttribute("libriHome")==null) {
             final List<Reparto> reparti = (List<Reparto>) getServletContext().getAttribute("reparti");
-            for (final Reparto reparto : reparti) {
-                if (reparto.getNome().equals("Libri di Tendenza")) {
-                    final List<Libro> libriHome = reparto.getLibri();
-                    request.setAttribute("libriHome", libriHome);
+            if (reparti != null) {
+                for (final Reparto reparto : reparti) {
+                    if (reparto != null && "Libri di Tendenza".equals(reparto.getNome())) {
+                        final List<Libro> libriHome = reparto.getLibri();
+                        request.setAttribute("libriHome", libriHome);
+                        break; // trovato, esco
+                    }
                 }
             }
         }

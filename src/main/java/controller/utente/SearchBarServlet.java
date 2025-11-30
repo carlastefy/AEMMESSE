@@ -16,34 +16,36 @@ import org.json.simple.JSONObject;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet ("/search")
 public class SearchBarServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        Utente utente = (Utente) session.getAttribute("utente");
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+        final HttpSession session = request.getSession();
+        final Utente utente = (Utente) session.getAttribute("utente");
         if(Validator.checkIfUserAdmin(utente)) {
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/homepageAdmin.jsp");
+            final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/homepageAdmin.jsp");
             dispatcher.forward(request, response);
+            return;
         }
-        String query = request.getParameter("q");
-        LibroDAO libroService = new LibroDAO();
-
-        JSONArray jsonArray = new JSONArray();
+        final String query = request.getParameter("q");
+        final LibroDAO libroService = new LibroDAO();
+        final JSONArray jsonArray = new JSONArray();
 
         if (query != null && !query.trim().isEmpty()) {
             List<Libro> results = libroService.Search(query);
-            // Creare un JSONArray dai risultati
-
-            for (int i = 0; i < results.size() && i < 10; i++) {
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("isbn", results.get(i).getIsbn());
-                jsonObject.put("titolo", results.get(i).getTitolo());
-                jsonArray.add(jsonObject);
+            if (results != null && !results.isEmpty()) {
+                // cache size and limit to 10 to avoid repeated size() calls
+                final int n = Math.min(results.size(), 10);
+                for (int i = 0; i < n; ++i) {
+                    final JSONObject jsonObject = new JSONObject();
+                    final Libro r = results.get(i);
+                    jsonObject.put("isbn", r.getIsbn());
+                    jsonObject.put("titolo", r.getTitolo());
+                    jsonArray.add(jsonObject);
+                }
             }
         }
 
@@ -52,7 +54,7 @@ public class SearchBarServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
 
         // Inviare la risposta JSON al client
-        PrintWriter out = response.getWriter();
+        final PrintWriter out = response.getWriter();
         out.print(jsonArray);
         out.flush();
 

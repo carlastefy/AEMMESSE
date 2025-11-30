@@ -1,6 +1,5 @@
 package controller.utente;
 
-import com.oracle.wls.shaded.org.apache.xml.utils.SystemIDResolver;
 import controller.utils.Validator;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -12,27 +11,24 @@ import jakarta.servlet.http.HttpSession;
 import model.carrelloService.Carrello;
 import model.carrelloService.RigaCarrello;
 import model.utenteService.Utente;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import javax.script.ScriptContext;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
 @WebServlet("/aggiorna-carrello")
 public class AggiornaCartServlet extends HttpServlet {
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        Utente utente = (Utente) session.getAttribute("utente");
+    protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+        final HttpSession session = request.getSession();
+        final Utente utente = (Utente) session.getAttribute("utente");
         if(Validator.checkIfUserAdmin(utente)) {
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/homepageAdmin.jsp");
+            final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/homepageAdmin.jsp");
             dispatcher.forward(request, response);
         }
-        Carrello carrello = (Carrello) session.getAttribute("carrello");
+        final Carrello carrello = (Carrello) session.getAttribute("carrello");
 
         if (carrello == null) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Carrello non trovato");
@@ -40,21 +36,21 @@ public class AggiornaCartServlet extends HttpServlet {
         }
 
         // JSON parser object to parse read JSON data from request
-        JSONParser jsonParser = new JSONParser();
+        final JSONParser jsonParser = new JSONParser();
 
-        try (InputStreamReader reader = new InputStreamReader(request.getInputStream())) {
+        try (final InputStreamReader reader = new InputStreamReader(request.getInputStream())) {
             // Parse JSON data
-            Object obj = jsonParser.parse(reader);
-            JSONObject item = (JSONObject) obj;
+            final Object obj = jsonParser.parse(reader);
+            final JSONObject item = (JSONObject) obj;
 
             // Ottieni i valori da JSON
-            String isbn = (String) item.get("isbn");
-            long quantityLong = (long) item.get("quantity");
-            int quantity = (int) quantityLong;
+            final String isbn = (String) item.get("isbn");
+            final long quantityLong = (long) item.get("quantity");
+            final int quantity = (int) quantityLong;
 
             // Trova l'elemento del carrello corrispondente e aggiorna la quantità
             boolean itemFound = false;
-            for (RigaCarrello riga : carrello.getRigheCarrello()) {
+            for (final RigaCarrello riga : carrello.getRigheCarrello()) {
                 if (riga.getLibro().getIsbn().equals(isbn)) {
                     riga.setQuantita(quantity);
                     itemFound = true;
@@ -75,7 +71,7 @@ public class AggiornaCartServlet extends HttpServlet {
             response.setStatus(HttpServletResponse.SC_OK);
 
 
-        } catch (ParseException e) {
+        } catch (final ParseException e) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage()); // "Formato JSON non valido"
             e.printStackTrace();
         }
@@ -126,7 +122,7 @@ public class AggiornaCartServlet extends HttpServlet {
     }
 
         @Override
-        protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
         this.doGet(req, resp);
     }
 }

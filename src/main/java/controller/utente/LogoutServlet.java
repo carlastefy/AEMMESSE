@@ -23,22 +23,22 @@ import java.util.List;
 
 @WebServlet("/log-out")
 public class LogoutServlet extends HttpServlet {
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        CarrelloDAO carrelloDAO = new CarrelloDAO();
-        WishListDAO wishListDAO = new WishListDAO();
-        Carrello carrello = (Carrello) session.getAttribute("carrello");
-        WishList wishList = (WishList) session.getAttribute("wishList");
-        Utente utente = (Utente) session.getAttribute("utente");
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+        final HttpSession session = request.getSession();
+        final CarrelloDAO carrelloDAO = new CarrelloDAO();
+        final WishListDAO wishListDAO = new WishListDAO();
+        final Carrello carrello = (Carrello) session.getAttribute("carrello");
+        final WishList wishList = (WishList) session.getAttribute("wishList");
+        final Utente utente = (Utente) session.getAttribute("utente");
         wishList.setEmail(utente.getEmail());
 
         try{
-            RigaCarrelloDAO rigaCarrelloService = new RigaCarrelloDAO();
+            final RigaCarrelloDAO rigaCarrelloService = new RigaCarrelloDAO();
             if(carrelloDAO.doRetriveByUtente(utente.getEmail()) != null && !(carrelloDAO.doRetriveByUtente(utente.getEmail()).getRigheCarrello().isEmpty())) {
                 //Carrello carrello2=carrelloDAO.doRetriveByUtente(utente.getEmail());
                 rigaCarrelloService.deleteRigheCarrelloByIdCarrello(carrelloDAO.doRetriveByUtente(utente.getEmail()).getIdCarrello());//elimino ciò che è presente nel db
             }
-            WishListDAO wishListService = new WishListDAO();
+            final WishListDAO wishListService = new WishListDAO();
             if(wishListDAO.doRetrieveByEmail(utente.getEmail())!= null && !(wishListDAO.doRetrieveByEmail(utente.getEmail()).getLibri().isEmpty())) {
                 wishListService.deleteWishListByEmail(utente.getEmail());//elimino ciò che è presente nel db
             }
@@ -54,15 +54,15 @@ public class LogoutServlet extends HttpServlet {
             }
 
 
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
 
         //Se l'admin modifica i reparti è necessario apportare modifiche alla lista salvata del serveltContext
         if(Validator.checkIfUserAdmin(utente)){
             getServletContext().removeAttribute("reparti");
-            RepartoDAO service = new RepartoDAO();
-            List<Reparto> reparti = service.doRetrivedAll();
+            final RepartoDAO service = new RepartoDAO();
+            final List<Reparto> reparti = service.doRetrivedAll();
             getServletContext().setAttribute("reparti", reparti);
         }
         session.invalidate();

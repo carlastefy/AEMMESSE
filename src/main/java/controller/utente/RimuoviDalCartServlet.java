@@ -20,28 +20,37 @@ import java.util.List;
 
 @WebServlet("/rimuovi-dal-carrello")
 public class RimuoviDalCartServlet extends HttpServlet {
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String isbn = request.getParameter("isbn");
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+        final String isbn = request.getParameter("isbn");
 
-        HttpSession session = request.getSession();
-        Utente utente = (Utente) session.getAttribute("utente");
-        if(Validator.checkIfUserAdmin(utente)) {
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/homepageAdmin.jsp");
+        final HttpSession session = request.getSession();
+        final Utente utente = (Utente) session.getAttribute("utente");
+        if (Validator.checkIfUserAdmin(utente)) {
+            final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/homepageAdmin.jsp");
             dispatcher.forward(request, response);
+            return;
         }
-        Carrello carrello = (Carrello) session.getAttribute("carrello");
 
-        LibroDAO libroService = new LibroDAO();
-        Libro libro = libroService.doRetrieveById(isbn);
+        final Carrello carrello = (Carrello) session.getAttribute("carrello");
 
-        List<RigaCarrello> righeCarrello = carrello.getRigheCarrello();
-        boolean success=false;
-        if(carrello!=null) {
-            for (int i = 0; i < righeCarrello.size(); i++) {
-                RigaCarrello riga = righeCarrello.get(i);
-                if (riga.getLibro().equals(libro)) {
-                    righeCarrello.remove(i);//quando trova il libro lo rimuove
-                    success=true;
+        final LibroDAO libroService = new LibroDAO();
+        final Libro libro = libroService.doRetrieveById(isbn);
+
+        boolean success = false;
+        if (carrello != null) {
+            List<RigaCarrello> righeCarrello = carrello.getRigheCarrello();
+            if (righeCarrello == null) {
+                righeCarrello = new java.util.ArrayList<>();
+                carrello.setRigheCarrello(righeCarrello);
+            }
+
+            // usa un Iterator per rimuovere in modo sicuro senza chiamare size()
+            java.util.Iterator<RigaCarrello> it = righeCarrello.iterator();
+            while (it.hasNext()) {
+                final RigaCarrello riga = it.next();
+                if (riga.getLibro() != null && riga.getLibro().equals(libro)) {
+                    it.remove(); // rimuove la riga corrente in modo sicuro
+                    success = true;
                 }
             }
             // Crea una risposta JSON per indicare lo stato della rimozione
@@ -61,7 +70,7 @@ public class RimuoviDalCartServlet extends HttpServlet {
 
     }
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
         this.doGet(req, resp);
     }
 }

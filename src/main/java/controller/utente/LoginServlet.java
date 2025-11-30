@@ -10,28 +10,22 @@ import jakarta.servlet.http.HttpSession;
 import model.carrelloService.Carrello;
 import model.carrelloService.CarrelloDAO;
 import model.carrelloService.RigaCarrello;
-import model.carrelloService.RigaCarrelloDAO;
-import model.libroService.Libro;
-import model.libroService.LibroDAO;
 import model.utenteService.Utente;
 import model.utenteService.UtenteDAO;
 import model.wishList.WishList;
 import model.wishList.WishListDAO;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @WebServlet("/login-servlet")
 
 public class LoginServlet extends HttpServlet {
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
 
         //controllo dei form
-        String email = request.getParameter("email");
-        String password = request.getParameter("pw");
+        final String email = request.getParameter("email");
+        final String password = request.getParameter("pw");
         if((email==null || email.isEmpty() || !email.contains("@")) || (password== null || (password.isEmpty()) || password.length()>16)){
             response.sendRedirect("/WEB-INF/errorJsp/loginError.jsp");
         }
@@ -40,32 +34,33 @@ public class LoginServlet extends HttpServlet {
             utente.setEmail(email);
             utente.setCodiceSicurezza(password);
 
-            UtenteDAO service = new UtenteDAO();
-
+            final UtenteDAO service = new UtenteDAO();
             if (service.doRetrieveByEmailPassword(utente.getEmail(), utente.getCodiceSicurezza()) == null) {
-                RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/errorJsp/loginError.jsp");
+                final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/errorJsp/loginError.jsp");
                 dispatcher.forward(request, response);
             } else {
-                HttpSession session = request.getSession();
+                final HttpSession session = request.getSession();
                 utente = service.doRetrieveById(email);
                 session.setAttribute("utente", utente);
 
-                Carrello carrelloLocale = (Carrello) session.getAttribute("carrello");// Recupera il carrello locale dalla sessione
-                List<RigaCarrello> righeLocali = carrelloLocale.getRigheCarrello();
+                final Carrello carrelloLocale = (Carrello) session.getAttribute("carrello");// Recupera il carrello locale dalla sessione
+                final List<RigaCarrello> righeLocali = carrelloLocale.getRigheCarrello();
 
-                CarrelloDAO carrelloService = new CarrelloDAO();
+                final CarrelloDAO carrelloService = new CarrelloDAO();
                 Carrello carrelloDb = null;
 
                 if (carrelloService.doRetriveByUtente(utente.getEmail()) != null) {
                     carrelloDb = carrelloService.doRetriveByUtente(utente.getEmail());// Recupera il carrello dal database
-                    List<RigaCarrello> rigaCarrelloDb = carrelloDb.getRigheCarrello();
+                    final List<RigaCarrello> rigaCarrelloDb = carrelloDb.getRigheCarrello();
 
                     if (righeLocali != null) {
                         // Fusiona i carrelli
-                        for (int i = 0; i < righeLocali.size(); i++) {
-                            RigaCarrello riga = righeLocali.get(i);
+                        final int sizeLocali = righeLocali.size();
+                        final int sizeDb = rigaCarrelloDb.size();
+                        for (int i = 0; i < sizeLocali; i++) {
+                            final RigaCarrello riga = righeLocali.get(i);
                             boolean flag = true;//non presente
-                            for (int j = 0; j < rigaCarrelloDb.size() && flag; j++) {
+                            for (int j = 0; j < sizeDb && flag; j++) {
                                 RigaCarrello riga2 = rigaCarrelloDb.get(j);
                                 if (riga2.getLibro().getIsbn().equals(riga.getLibro().getIsbn())) { //se l'isbn è già presente nel carrello del DB
                                     riga2.setQuantita(riga2.getQuantita() + riga.getQuantita());//incremento semplicemente la quantità
@@ -79,8 +74,8 @@ public class LoginServlet extends HttpServlet {
                         }
                     }
                 }
-                WishListDAO wishListService = new WishListDAO();
-                WishList wishList = wishListService.doRetrieveByEmail(utente.getEmail());
+                final WishListDAO wishListService = new WishListDAO();
+                final WishList wishList = wishListService.doRetrieveByEmail(utente.getEmail());
 
                 session.setAttribute("carrello", carrelloDb);
                 session.setAttribute("wishList", wishList);
@@ -94,7 +89,7 @@ public class LoginServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
         this.doGet(req, resp);
     }
 }

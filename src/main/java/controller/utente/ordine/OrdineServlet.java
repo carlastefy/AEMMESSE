@@ -138,10 +138,12 @@ public class OrdineServlet extends HttpServlet {
                 }
             }
             sizeRigheCarrello = carrello.getRigheCarrello().size();
-            for(int j = 0; j<sizeRigheCarrello; ++j){
-                final RigaCarrello rigaInSessione = carrello.getRigheCarrello().get(j);
-                if(rigaInSessione.getLibro().equals(l)){
-                    carrello.getRigheCarrello().remove(j);
+            // rimuovi in modo sicuro usando un iterator per evitare problemi di indice
+            java.util.Iterator<RigaCarrello> itSession = carrello.getRigheCarrello().iterator();
+            while (itSession.hasNext()) {
+                final RigaCarrello rigaInSessione = itSession.next();
+                if (rigaInSessione.getLibro().equals(l)) {
+                    itSession.remove();
                     break;
                 }
             }

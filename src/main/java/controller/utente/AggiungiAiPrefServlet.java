@@ -21,41 +21,43 @@ import java.util.ArrayList;
 public class AggiungiAiPrefServlet extends HttpServlet {
 
     //Nuova servlet per aggiornare i preferiti (creata per utilizzare AJAX)
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String isbn = request.getParameter("isbn"); // Ottieni l'ISBN dal parametro della richiesta
-        LibroDAO libroService = new LibroDAO();
-        Libro libro = libroService.doRetrieveById(isbn);
-        HttpSession session = request.getSession();
-        Utente utente= (Utente) session.getAttribute("utente");
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+        final String isbn = request.getParameter("isbn"); // Ottieni l'ISBN dal parametro della richiesta
+        final LibroDAO libroService = new LibroDAO();
+        final Libro libro = libroService.doRetrieveById(isbn);
+        final HttpSession session = request.getSession();
+        final Utente utente= (Utente) session.getAttribute("utente");
         if(Validator.checkIfUserAdmin(utente)) {
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/homepageAdmin.jsp");
+            final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/homepageAdmin.jsp");
             dispatcher.forward(request, response);
         } else if(utente==null){
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "User not logged in");
         }
         else {
-            JSONObject jsonResponse = new JSONObject();
+            final JSONObject jsonResponse = new JSONObject();
             //boolean
             jsonResponse.put("isInWishList", true); // Indica se il libro è ora nei preferiti
 
             // Aggiungi l'ISBN alla WishList (o al database)
             WishList wishList = (WishList) session.getAttribute("wishList");
-            boolean flag = true; // libro non presente
-            if (wishList != null && wishList.getLibri() != null) {
-                for (int i = 0; i < wishList.getLibri().size() && flag; i++) {
-                    if (wishList.getLibri().get(i).equals(libro)) {
-                        wishList.getLibri().remove(i); // libro già presente, lo rimuovo
-                        flag = false;
-                        jsonResponse.put("isInWishList", false); // Indica che il libro non è più nei preferiti
-                    }
-                }
-                if (flag)// se il libro non è presente, lo aggiungo
-                    wishList.getLibri().add(libro);
-
-            } else {
+            if (wishList == null) {
+                wishList = new WishList();
                 wishList.setLibri(new ArrayList<>());
-                wishList.getLibri().add(libro);
+            }
 
+            java.util.List<Libro> libri = wishList.getLibri();
+            if (libri == null) {
+                libri = new ArrayList<>();
+                wishList.setLibri(libri);
+            }
+
+            // rimuovo la prima occorrenza se presente, altrimenti aggiungo
+            boolean removed = libri.remove(libro);
+            if (removed) {
+                jsonResponse.put("isInWishList", false); // Indica che il libro non è più nei preferiti
+            } else {
+                libri.add(libro);
+                jsonResponse.put("isInWishList", true);
             }
 
             session.setAttribute("wishList", wishList);
@@ -68,7 +70,7 @@ public class AggiungiAiPrefServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
         this.doGet(req, resp);
     }
 }

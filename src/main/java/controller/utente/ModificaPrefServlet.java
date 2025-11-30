@@ -19,18 +19,17 @@ import java.util.List;
 
 @WebServlet("/modifica-preferiti")
 public class ModificaPrefServlet extends HttpServlet {
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String isbn = request.getParameter("isbn");
-        String source=request.getParameter("source");
-        String position = request.getParameter("position");
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+        final String isbn = request.getParameter("isbn");
+        final String source = request.getParameter("source");
+        final String position = request.getParameter("position");
 
-        HttpSession session = request.getSession();
-        Utente utente = (Utente) session.getAttribute("utente");
+        final HttpSession session = request.getSession();
+        final Utente utente = (Utente) session.getAttribute("utente");
 
         String address="index.html";
-        LibroDAO libroService = new LibroDAO();
-        Libro libro = libroService.doRetrieveById(isbn);
-
+        final LibroDAO libroService = new LibroDAO();
+        final Libro libro = libroService.doRetrieveById(isbn);
         if(utente==null) {
             address = "/WEB-INF/results/login.jsp";
         }
@@ -41,9 +40,9 @@ public class ModificaPrefServlet extends HttpServlet {
             }
             else if(source!= null && source.equals("reparto")){// controllo se il bottone è stato selezionato nel reparto
                 if(request.getParameter("repartoAttuale")!=null) {
-                    int idReparto = Integer.parseInt(request.getParameter("repartoAttuale"));
-                    List<Reparto> reparti = (List<Reparto>) getServletContext().getAttribute("reparti");
-                    for(Reparto r : reparti) {
+                    final int idReparto = Integer.parseInt(request.getParameter("repartoAttuale"));
+                    final List<Reparto> reparti = (List<Reparto>) getServletContext().getAttribute("reparti");
+                    for(final Reparto r : reparti) {
                         if(r.getIdReparto()==idReparto) {
                             request.setAttribute("reparto", r);
                         }
@@ -55,20 +54,23 @@ public class ModificaPrefServlet extends HttpServlet {
                 request.setAttribute("libro", libro);
             }
             WishList wishList = (WishList) session.getAttribute("wishList");
-            boolean flag = true; // libro non presente
-            if (wishList != null && wishList.getLibri() != null) {
-                for (int i = 0; i < wishList.getLibri().size() && flag; i++) {
-                    if (wishList.getLibri().get(i).equals(libro)) {
-                        wishList.getLibri().remove(i); // libro già presente, lo rimuovo
-                        flag = false;
-                    }
-                }
-                if (flag)// se il libro non è presente, lo aggiungo
-                    wishList.getLibri().add(libro);
-            } else {
+            if (wishList == null) {
+                wishList = new WishList();
                 wishList.setLibri(new ArrayList<>());
-                wishList.getLibri().add(libro);
             }
+
+            java.util.List<Libro> libri = wishList.getLibri();
+            if (libri == null) {
+                libri = new ArrayList<>();
+                wishList.setLibri(libri);
+            }
+
+            // rimuovo la prima occorrenza se presente, altrimenti aggiungo
+            boolean removed = libri.remove(libro);
+            if (!removed) {
+                libri.add(libro);
+            }
+
             session.setAttribute("wishList", wishList);
 
             if (position != null) {
@@ -77,7 +79,7 @@ public class ModificaPrefServlet extends HttpServlet {
 
         }
 
-        RequestDispatcher dispatcher = request.getRequestDispatcher(address);
+        final RequestDispatcher dispatcher = request.getRequestDispatcher(address);
         dispatcher.forward(request, response);
     }
 }

@@ -30,11 +30,15 @@ public class ModificaMatricolaSupporto extends HttpServlet {
         final List<Gestore> gestori = gestoreDAO.doRetrivedAll();
 
         //elimino la matricola a cui era stato affidato l'ordine poichè se decido di cambiarla vuol dire che non è disponibile
-        final int size = gestori.size();
-        for(int i = 0; i< size; ++i){
-            if(gestori.get(i).getMatricola().equalsIgnoreCase(matricola)){
-                gestori.remove(i);
-                break;
+        // Rimuovi la prima matricola corrispondente in modo sicuro usando un iterator
+        if (gestori != null) {
+            java.util.Iterator<Gestore> it = gestori.iterator();
+            while (it.hasNext()) {
+                final Gestore g = it.next();
+                if (g != null && g.getMatricola().equalsIgnoreCase(matricola)) {
+                    it.remove();
+                    break;
+                }
             }
         }
 

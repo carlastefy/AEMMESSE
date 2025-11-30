@@ -23,23 +23,17 @@ public class ModificaLibroServlet extends HttpServlet {
 
         final List<Sede> sedi= service.getPresenzaSede(libro.getIsbn());
         final List<Sede> sediNonPresenti = sedeService.doRetrivedAll();
-        final int n= sediNonPresenti.size();
-        for(int i=0; i<n; ++i){
-            final Sede sede=sediNonPresenti.get(i);
-            if(sedi.contains(sede)) {
-                sediNonPresenti.remove(i);
-            }
+        // Rimuovi tutte le sedi presenti nella lista 'sedi' dalla lista delle sedi non presenti
+        if (sedi != null && !sedi.isEmpty()) {
+            sediNonPresenti.removeAll(sedi);
         }
 
 
         final List<Reparto> reparti= service.getAppartenenzaReparto(libro.getIsbn());
         final List<Reparto> repartiNonPresenti = repartoService.doRetrivedAll();
-        final int m= repartiNonPresenti.size();
-        for(int i=0; i<m; ++i){
-            final Reparto reparto=repartiNonPresenti.get(i);
-            if(reparti.contains(reparto)) {
-                repartiNonPresenti.remove(i);
-            }
+        // Rimuovi tutti i reparti presenti nella lista 'reparti' dalla lista dei reparti non presenti
+        if (reparti != null && !reparti.isEmpty()) {
+            repartiNonPresenti.removeAll(reparti);
         }
 
         request.setAttribute("libro", libro);

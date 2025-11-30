@@ -18,24 +18,23 @@ import java.util.Random;
 
 @WebServlet("/cambia-tipo")
 public class ModificaTipoServlet extends HttpServlet {
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        Utente utente = (Utente) session.getAttribute("utente");
-        TesseraDAO tesseraService = new TesseraDAO();
-        UtenteDAO utenteDAO = new UtenteDAO();
-
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+        final HttpSession session = request.getSession();
+        final Utente utente = (Utente) session.getAttribute("utente");
+        final TesseraDAO tesseraService = new TesseraDAO();
+        final UtenteDAO utenteDAO = new UtenteDAO();
         if(utente.getTipo().equalsIgnoreCase("premium")){
             utente.setTipo("Standard");
-            String numero = tesseraService.doRetrieveByEmail(utente.getEmail()).getNumero();
+            final String numero = tesseraService.doRetrieveByEmail(utente.getEmail()).getNumero();
             tesseraService.deleteTessera(numero);
 
         }else if(utente.getTipo().equalsIgnoreCase("standard")){
             utente.setTipo("Premium");
-            Tessera tessera = new Tessera();
+            final Tessera tessera = new Tessera();
             tessera.setEmail(utente.getEmail());
             tessera.setDataCreazione(LocalDate.now());
             tessera.setDataScadenza(LocalDate.now().plusYears(2));
-            List<String> numeri = tesseraService.doRetrivedAllByNumero();
+            final List<String> numeri = tesseraService.doRetrivedAllByNumero();
             String numero;
             Random random =new Random();
             do {
@@ -49,7 +48,7 @@ public class ModificaTipoServlet extends HttpServlet {
         utenteDAO.updateUtente(utente); //cambio nel db i parametri cambiati
         response.sendRedirect("area-personale");
     }
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         doGet(request, response);
     }
 }

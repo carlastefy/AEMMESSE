@@ -28,13 +28,13 @@ public class RegistroUtente extends HttpServlet{
         this.tesseraDAO = tesseraDAO;
     }
 
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
 
-        Utente utente = new Utente();
-        String nomeUtente = request.getParameter("nomeUtente");
-        String email = request.getParameter("email");
-        String codiceSicurezza = request.getParameter("pw");
-        String tipo = request.getParameter("tipo");
+        final Utente utente = new Utente();
+        final String nomeUtente = request.getParameter("nomeUtente");
+        final String email = request.getParameter("email");
+        final String codiceSicurezza = request.getParameter("pw");
+        final String tipo = request.getParameter("tipo");
         String address = null;
 
         if (nomeUtente == null || nomeUtente.isEmpty() || (email == null || email.isEmpty() || !email.contains("@")) ||
@@ -42,9 +42,9 @@ public class RegistroUtente extends HttpServlet{
             //pagina di errore per inserimento parametri errato
             address = "/WEB-INF/errorJsp/erroreForm.jsp";
         }else{
-            String[] numeriTelefono = request.getParameterValues("telefono");
-            List<String> telefoni = new ArrayList<>();
-            for (String telefono : numeriTelefono) {
+            final String[] numeriTelefono = request.getParameterValues("telefono");
+            final List<String> telefoni = new ArrayList<>();
+            for (final String telefono : numeriTelefono) {
                 if (!isNumeric(telefono) || telefono.length() != 10) {
                     //pagina dai errore per inserimento parametri errato
                     address = "/WEB-INF/errorJsp/erroreForm.jsp";
@@ -52,14 +52,14 @@ public class RegistroUtente extends HttpServlet{
             }
 
             //se un telefono è già esistente nel DB va in errore
-            UtenteDAO utenteService = utenteDAO;
+            final UtenteDAO utenteService = utenteDAO;
 
-            List<String> telefoniDB = utenteService.doRetrieveAllTelefoni();
+            final List<String> telefoniDB = utenteService.doRetrieveAllTelefoni();
             if(!telefoniDB.isEmpty()){
-                for(String telefono: telefoni){
+                for(final String telefono: telefoni){
                     if (telefoniDB.contains(telefono)) {
                         address = "/WEB-INF/errorJsp/erroreTelefonoDB.jsp";
-                        RequestDispatcher dispatcher = request.getRequestDispatcher(address);
+                        final RequestDispatcher dispatcher = request.getRequestDispatcher(address);
                         dispatcher.forward(request, response);
                         return;
                     }
@@ -72,16 +72,16 @@ public class RegistroUtente extends HttpServlet{
             utente.setCodiceSicurezza(codiceSicurezza);
             utente.setTelefoni(telefoni);
 
-            Utente utenteRetrieved = utenteService.doRetrieveById(utente.getEmail());
+            final Utente utenteRetrieved = utenteService.doRetrieveById(utente.getEmail());
             if (utenteRetrieved == null) {
                 utenteService.doSave(utente);
                 if (utente.getTipo().equalsIgnoreCase("premium")) {
-                    TesseraDAO tesseraService = tesseraDAO;
-                    Tessera tessera = new Tessera();
+                    final TesseraDAO tesseraService = tesseraDAO;
+                    final Tessera tessera = new Tessera();
                     tessera.setEmail(utente.getEmail());
                     tessera.setDataCreazione(LocalDate.now());
                     tessera.setDataScadenza(LocalDate.now().plusYears(2));
-                    List<String> numeri = tesseraService.doRetrivedAllByNumero();
+                    final List<String> numeri = tesseraService.doRetrivedAllByNumero();
                     String numT;
                     Random random = new Random();
                     do {
@@ -91,11 +91,11 @@ public class RegistroUtente extends HttpServlet{
                     tesseraService.doSave(tessera);
                 }
                 //request.getSession().setAttribute("utente", utente);
-                CarrelloDAO carrelloService = new CarrelloDAO();
-                Carrello carrello = new Carrello();
+                final CarrelloDAO carrelloService = new CarrelloDAO();
+                final Carrello carrello = new Carrello();
                 carrello.setEmail(utente.getEmail());
                 carrello.setTotale(0);
-                List<String> id = carrelloService.doRetrivedAllIdCarrelli();
+                final List<String> id = carrelloService.doRetrivedAllIdCarrelli();
                 String newId;
                 Random random = new Random();
                 do {
@@ -119,17 +119,17 @@ public class RegistroUtente extends HttpServlet{
             }
         }
 
-        RequestDispatcher dispatcher = request.getRequestDispatcher(address);
+        final RequestDispatcher dispatcher = request.getRequestDispatcher(address);
         dispatcher.forward(request, response);
 
     }
 
-    private static boolean isNumeric(String str) {//metodo che utilizza espressione regolare per verificare che una stringa contenga solo numeri
+    private static boolean isNumeric(final String str) {//metodo che utilizza espressione regolare per verificare che una stringa contenga solo numeri
         return str != null && !str.isEmpty() && str.matches("\\d+");
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
         this.doGet(req, resp);
     }
 }

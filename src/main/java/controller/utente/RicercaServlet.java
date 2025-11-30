@@ -17,15 +17,15 @@ import java.util.List;
 @WebServlet("/ricerca-servlet")
 public class RicercaServlet extends HttpServlet {
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        Utente utente = (Utente) session.getAttribute("utente");
+    protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+        final HttpSession session = request.getSession();
+        final Utente utente = (Utente) session.getAttribute("utente");
         if(Validator.checkIfUserAdmin(utente)) {
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/homepageAdmin.jsp");
+            final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/homepageAdmin.jsp");
             dispatcher.forward(request, response);
         }
-        String query = request.getParameter("q");
-        LibroDAO libroService = new LibroDAO();
+        final String query = request.getParameter("q");
+        final LibroDAO libroService = new LibroDAO();
         String address = null;
         if(query==null){
             address = "/WEB-INF/errorJsp/erroreForm.jsp";
@@ -35,12 +35,12 @@ public class RicercaServlet extends HttpServlet {
         }
         else {
             address="/WEB-INF/results/ricerca.jsp";
-            List<Libro> results = libroService.Search(query);
+            final List<Libro> results = libroService.Search(query);
             request.setAttribute("results", results);
             request.setAttribute("q", query);
         }
 
-        RequestDispatcher dispatcher = request.getRequestDispatcher(address);
+        final RequestDispatcher dispatcher = request.getRequestDispatcher(address);
         dispatcher.forward(request, response);
 
     }

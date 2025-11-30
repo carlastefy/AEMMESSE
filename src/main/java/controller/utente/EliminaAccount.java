@@ -12,10 +12,10 @@ import java.io.IOException;
 
 @WebServlet("/elimina-account")
 public class EliminaAccount extends HttpServlet {
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        HttpSession session = request.getSession();
-        Utente utente = (Utente) session.getAttribute("utente");
-        UtenteDAO utenteDAO = new UtenteDAO();
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
+        final HttpSession session = request.getSession();
+        final Utente utente = (Utente) session.getAttribute("utente");
+        final UtenteDAO utenteDAO = new UtenteDAO();
         utenteDAO.deleteUtente(utente.getEmail());
 
         session.invalidate();

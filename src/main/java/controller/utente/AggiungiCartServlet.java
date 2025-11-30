@@ -13,27 +13,25 @@ import model.carrelloService.RigaCarrello;
 import model.libroService.Libro;
 import model.libroService.LibroDAO;
 import model.utenteService.Utente;
-import org.json.simple.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet("/aggiungi-carrello")
 public class AggiungiCartServlet extends HttpServlet {
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String isbn = request.getParameter("isbn");
-        String source= request.getParameter("source");
-        String position = request.getParameter("position");
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+        final String isbn = request.getParameter("isbn");
+        final String source= request.getParameter("source");
+        final String position = request.getParameter("position");
 
-        HttpSession session = request.getSession();
-        Utente utente = (Utente) session.getAttribute("utente");
+        final HttpSession session = request.getSession();
+        final Utente utente = (Utente) session.getAttribute("utente");
         if(Validator.checkIfUserAdmin(utente)) {
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/homepageAdmin.jsp");
+            final RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/admin/homepageAdmin.jsp");
             dispatcher.forward(request, response);
         }
        // Utente utente = (Utente) session.getAttribute("utente");
-        Carrello carrello = (Carrello) session.getAttribute("carrello");
+        final Carrello carrello = (Carrello) session.getAttribute("carrello");
 
         String address="index.html";
         if(source!= null) { //ho aggiunto il controllo per source potrebbe essere null
@@ -49,15 +47,15 @@ public class AggiungiCartServlet extends HttpServlet {
             }
         }
 
-        LibroDAO libroService = new LibroDAO();
-        Libro libro = libroService.doRetrieveById(isbn);
+        final LibroDAO libroService = new LibroDAO();
+        final Libro libro = libroService.doRetrieveById(isbn);
 
-        List<RigaCarrello> righeCarrello = carrello.getRigheCarrello();
+        final List<RigaCarrello> righeCarrello = carrello.getRigheCarrello();
 
         boolean flag = true; // libro non presente
         if(!righeCarrello.isEmpty()) {
             for (int i = 0; i < righeCarrello.size() && flag; i++) {
-                Libro libroRiga = righeCarrello.get(i).getLibro(); // libro della rigaCarrello
+                final Libro libroRiga = righeCarrello.get(i).getLibro(); // libro della rigaCarrello
                 if (libroRiga.equals(libro)) {
                     righeCarrello.get(i).setQuantita((righeCarrello.get(i).getQuantita()) + 1); // libro presente, incremento la quantità
                     flag = false; // libro presente
@@ -65,7 +63,7 @@ public class AggiungiCartServlet extends HttpServlet {
             }
         }
         if (flag) { // se il libro non è presente, lo aggiungo
-            RigaCarrello riga = new RigaCarrello();
+            final RigaCarrello riga = new RigaCarrello();
             riga.setIdCarrello(carrello.getIdCarrello());
             riga.setLibro(libro);
             riga.setQuantita(1);
@@ -80,7 +78,7 @@ public class AggiungiCartServlet extends HttpServlet {
         }
 
         //response.sendRedirect(address);//supporta l'ancoraggio*/
-        RequestDispatcher dispatcher = request.getRequestDispatcher(address);
+        final RequestDispatcher dispatcher = request.getRequestDispatcher(address);
             dispatcher.forward(request, response);
 
     }

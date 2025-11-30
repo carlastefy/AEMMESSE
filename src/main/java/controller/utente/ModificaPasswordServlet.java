@@ -13,8 +13,8 @@ import java.io.IOException;
 
 @WebServlet("/modifica-password")
 public class ModificaPasswordServlet extends HttpServlet {
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        String password = request.getParameter("password");
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
+        final String password = request.getParameter("password");
         String address = null;
         if (password == null || password.isEmpty() || password.length() > 16) {
             address = "/WEB-INF/errorJsp/erroreForm.jsp";
@@ -22,18 +22,18 @@ public class ModificaPasswordServlet extends HttpServlet {
         }else {
             address = "area-personale";
 
-            UtenteDAO serviceUtente = new UtenteDAO();
-            Utente utente = (Utente) request.getSession().getAttribute("utente");
+            final UtenteDAO serviceUtente = new UtenteDAO();
+            final Utente utente = (Utente) request.getSession().getAttribute("utente");
             utente.setCodiceSicurezza(password);
             serviceUtente.updateUtentePassword(utente);
         }
 
-        RequestDispatcher dispatcher = request.getRequestDispatcher(address);
+        final RequestDispatcher dispatcher = request.getRequestDispatcher(address);
         dispatcher.forward(request, response);
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
         this.doGet(req, resp);
     }
 }
