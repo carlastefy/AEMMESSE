@@ -115,7 +115,7 @@ public class LibroDAO {
         final List<Libro> libri = new ArrayList<>();
         try (final Connection con = ConPool.getConnection()) {
             final PreparedStatement ps =
-                    con.prepareStatement("SELECT isbn, titolo, annoPubblicazione, prezzo, sconto, sconto, trama, immagine, disponibile FROM libro");
+                    con.prepareStatement("SELECT isbn, titolo, genere, annoPubblicazione, prezzo, sconto, trama, immagine, disponibile FROM libro");
 
             final ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -141,7 +141,7 @@ public class LibroDAO {
     public Libro doRetrieveById(final String isbn) {
         try (final Connection con = ConPool.getConnection()) {
             final PreparedStatement ps =
-                    con.prepareStatement("SELECT isbn, titolo, annoPubblicazione, prezzo, sconto, sconto, trama, immagine, disponibile FROM libro WHERE isbn=?");
+                    con.prepareStatement("SELECT isbn, titolo, genere, annoPubblicazione, prezzo, sconto, trama, immagine, disponibile FROM libro WHERE isbn=?");
             ps.setString(1, isbn);
             final ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -254,7 +254,7 @@ public class LibroDAO {
 
     public List<Libro> Search(final String query) {
         try (final Connection con = ConPool.getConnection()) {
-            final PreparedStatement ps = con.prepareStatement("SELECT isbn, titolo, annoPubblicazione, prezzo, sconto, sconto, trama, immagine, disponibile FROM libro WHERE titolo LIKE ? OR isbn LIKE ?");
+            final PreparedStatement ps = con.prepareStatement("SELECT isbn, titolo, genere, annoPubblicazione, prezzo, sconto, trama, immagine, disponibile FROM libro WHERE titolo LIKE ? OR isbn LIKE ?");
             ps.setString(1, "%" + query + "%");
             ps.setString(2, query + "%");
 

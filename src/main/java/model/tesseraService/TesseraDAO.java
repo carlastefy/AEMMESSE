@@ -59,7 +59,7 @@ public class TesseraDAO {
         final List<Tessera> tessere = new ArrayList<>();
         try (final Connection con = ConPool.getConnection()) {
             final PreparedStatement ps =
-                    con.prepareStatement("SELECT nuemero, dataCreazione, dataScadenza, punti, email FROM tessera");
+                    con.prepareStatement("SELECT numero, dataCreazione, dataScadenza, punti, email FROM tessera");
 
             final ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -80,7 +80,7 @@ public class TesseraDAO {
         final List<String> numeri = new ArrayList<>();
         try (final Connection con = ConPool.getConnection()) {
             final PreparedStatement ps =
-                    con.prepareStatement("SELECT nuemero, dataCreazione, dataScadenza, punti, email FROM tessera");
+                    con.prepareStatement("SELECT numero, dataCreazione, dataScadenza, punti, email FROM tessera");
 
             final ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -95,7 +95,7 @@ public class TesseraDAO {
     public Tessera doRetrieveById(final String numero) {
         try (final Connection con = ConPool.getConnection()) {
             final PreparedStatement ps =
-                    con.prepareStatement("SELECT nuemero, dataCreazione, dataScadenza, punti, email FROM tessera WHERE numero=?");
+                    con.prepareStatement("SELECT numero, dataCreazione, dataScadenza, punti, email FROM tessera WHERE numero=?");
             ps.setString(1, numero);
             final ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -116,7 +116,7 @@ public class TesseraDAO {
     public Tessera doRetrieveByEmail(final String email) {
         try (final Connection con = ConPool.getConnection()) {
             final PreparedStatement ps =
-                    con.prepareStatement("SELECT nuemero, dataCreazione, dataScadenza, punti, email FROM tessera WHERE email=?");
+                    con.prepareStatement("SELECT numero, dataCreazione, dataScadenza, punti, email FROM tessera WHERE email=?");
             ps.setString(1, email);
             final ResultSet rs = ps.executeQuery();
             if (rs.next()) {
