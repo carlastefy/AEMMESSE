@@ -54,13 +54,16 @@ public class AggiungiCartServlet extends HttpServlet {
 
         boolean flag = true; // libro non presente
         if(!righeCarrello.isEmpty()) {
-            for (int i = 0; i < righeCarrello.size() && flag; i++) {
-                final Libro libroRiga = righeCarrello.get(i).getLibro(); // libro della rigaCarrello
+            final int righeSize = righeCarrello.size();
+            for (int i = 0; i < righeSize && flag; ++i) {
+                final RigaCarrello rigaCarrello = righeCarrello.get(i);
+                final Libro libroRiga = rigaCarrello.getLibro(); // libro della rigaCarrello
                 if (libroRiga.equals(libro)) {
-                    righeCarrello.get(i).setQuantita((righeCarrello.get(i).getQuantita()) + 1); // libro presente, incremento la quantità
+                    rigaCarrello.setQuantita(rigaCarrello.getQuantita() + 1); // libro presente, incremento la quantità
                     flag = false; // libro presente
                 }
             }
+
         }
         if (flag) { // se il libro non è presente, lo aggiungo
             final RigaCarrello riga = new RigaCarrello();

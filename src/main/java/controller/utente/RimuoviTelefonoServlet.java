@@ -51,7 +51,7 @@ public class RimuoviTelefonoServlet extends HttpServlet {
             }
 
             // Usa un iterator per rimuovere in modo sicuro senza chiamare size()
-            java.util.Iterator<String> it = telefoniSession.iterator();
+            final java.util.Iterator<String> it = telefoniSession.iterator();
             while (it.hasNext()) {
                 final String t = it.next();
                 if (t != null && t.equals(telefono)) {

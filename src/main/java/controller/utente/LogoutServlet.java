@@ -44,11 +44,11 @@ public class LogoutServlet extends HttpServlet {
             }
 
             if(carrello.getRigheCarrello()!= null) {
-                for (RigaCarrello riga : carrello.getRigheCarrello())
+                for (final RigaCarrello riga : carrello.getRigheCarrello())
                     rigaCarrelloService.doSave(riga); //ripopolo il db con le informazioni presenti in sessione
             }
             if(wishList.getLibri()!= null) {
-                for (Libro libro : wishList.getLibri()) {
+                for (final Libro libro : wishList.getLibri()) {
                     wishListService.doSave(wishList, libro.getIsbn()); //ripopolo il db con le informazioni presenti in sessione
                 }
             }

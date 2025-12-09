@@ -30,7 +30,7 @@ public class ModificaDatiServlet extends HttpServlet {
 
 
             if (telefoni.length > 0) {
-                for (String tel : telefoni) {
+                for (final String tel : telefoni) {
                     if (!tel.isEmpty() && !(utente.getTelefoni().contains(tel))) {
                         utente.getTelefoni().add(tel);
                     }
