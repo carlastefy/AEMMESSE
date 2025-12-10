@@ -57,11 +57,11 @@ public class LoginServlet extends HttpServlet {
                         // Fusiona i carrelli
                         final int sizeLocali = righeLocali.size();
                         final int sizeDb = rigaCarrelloDb.size();
-                        for (int i = 0; i < sizeLocali; i++) {
+                        for (int i = 0; i < sizeLocali; ++i) {
                             final RigaCarrello riga = righeLocali.get(i);
                             boolean flag = true;//non presente
-                            for (int j = 0; j < sizeDb && flag; j++) {
-                                RigaCarrello riga2 = rigaCarrelloDb.get(j);
+                            for (int j = 0; j < sizeDb && flag; ++j) {
+                                final RigaCarrello riga2 = rigaCarrelloDb.get(j);
                                 if (riga2.getLibro().getIsbn().equals(riga.getLibro().getIsbn())) { //se l'isbn è già presente nel carrello del DB
                                     riga2.setQuantita(riga2.getQuantita() + riga.getQuantita());//incremento semplicemente la quantità
                                     flag = false;

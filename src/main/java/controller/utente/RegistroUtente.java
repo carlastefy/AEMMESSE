@@ -83,7 +83,7 @@ public class RegistroUtente extends HttpServlet{
                     tessera.setDataScadenza(LocalDate.now().plusYears(2));
                     final List<String> numeri = tesseraService.doRetrivedAllByNumero();
                     String numT;
-                    Random random = new Random();
+                    final Random random = new Random();
                     do {
                         numT = "T" + random.nextInt(10) + random.nextInt(10) + random.nextInt(10);
                     } while (numeri.contains(numT));
@@ -97,11 +97,11 @@ public class RegistroUtente extends HttpServlet{
                 carrello.setTotale(0);
                 final List<String> id = carrelloService.doRetrivedAllIdCarrelli();
                 String newId;
-                Random random = new Random();
+                final Random random = new Random();
                 do {
-                    char a = (char) (65 + random.nextInt(90 - 65));
-                    char b = (char) (65 + random.nextInt(90 - 65));
-                    char c = (char) (65 + random.nextInt(90 - 65));
+                    final char a = (char) (65 + random.nextInt(90 - 65));
+                    final char b = (char) (65 + random.nextInt(90 - 65));
+                    final char c = (char) (65 + random.nextInt(90 - 65));
                     newId = a + b + c + String.valueOf(10 + random.nextInt(100 - 10));
                 } while (id.contains(newId));
 

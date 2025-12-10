@@ -36,7 +36,7 @@ public class ModificaTipoServlet extends HttpServlet {
             tessera.setDataScadenza(LocalDate.now().plusYears(2));
             final List<String> numeri = tesseraService.doRetrivedAllByNumero();
             String numero;
-            Random random =new Random();
+            final Random random =new Random();
             do {
                 numero = "T" + random.nextInt(10) + random.nextInt(10) + random.nextInt(10);
             }while(numeri.contains(numero));

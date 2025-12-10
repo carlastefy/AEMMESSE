@@ -27,46 +27,54 @@ public class ModificaPrefServlet extends HttpServlet {
         final HttpSession session = request.getSession();
         final Utente utente = (Utente) session.getAttribute("utente");
 
-        String address="index.html";
+        String address = "index.html";
         final LibroDAO libroService = new LibroDAO();
         final Libro libro = libroService.doRetrieveById(isbn);
-        if(utente==null) {
-            address = "/WEB-INF/results/login.jsp";
-        }
 
-        else {
-            if(source!= null && source.equals("wishList")){// controllo se il bottone è stato selezionato nella show WishList
-                address="/WEB-INF/results/showWishList.jsp";
-            }
-            else if(source!= null && source.equals("reparto")){// controllo se il bottone è stato selezionato nel reparto
-                if(request.getParameter("repartoAttuale")!=null) {
-                    final int idReparto = Integer.parseInt(request.getParameter("repartoAttuale"));
-                    final List<Reparto> reparti = (List<Reparto>) getServletContext().getAttribute("reparti");
-                    for(final Reparto r : reparti) {
-                        if(r.getIdReparto()==idReparto) {
-                            request.setAttribute("reparto", r);
+        if (utente == null) {
+            address = "/WEB-INF/results/login.jsp";
+        } else {
+            // Use switch for source routing
+            if (source != null) {
+                switch (source) {
+                    case "wishList":
+                        address = "/WEB-INF/results/showWishList.jsp";
+                        break;
+                    case "reparto":
+                        final String repartoParam = request.getParameter("repartoAttuale");
+                        if (repartoParam != null) {
+                            final int idReparto = Integer.parseInt(repartoParam);
+                            final List<Reparto> reparti = (List<Reparto>) getServletContext().getAttribute("reparti");
+                            for (final Reparto r : reparti) {
+                                if (r.getIdReparto() == idReparto) {
+                                    request.setAttribute("reparto", r);
+                                    break;
+                                }
+                            }
+                            address = "/WEB-INF/results/reparto.jsp";
                         }
-                    }
-                    address = "/WEB-INF/results/reparto.jsp";
+                        break;
+                    case "mostraLibro":
+                        address = "/WEB-INF/results/mostraLibro.jsp";
+                        request.setAttribute("libro", libro);
+                        break;
                 }
-            }else if(source!= null && source.equals("mostraLibro")){
-                address = "/WEB-INF/results/mostraLibro.jsp";
-                request.setAttribute("libro", libro);
             }
+
+            // Wishlist logic
             WishList wishList = (WishList) session.getAttribute("wishList");
             if (wishList == null) {
                 wishList = new WishList();
                 wishList.setLibri(new ArrayList<>());
             }
 
-            java.util.List<Libro> libri = wishList.getLibri();
+            List<Libro> libri = wishList.getLibri();
             if (libri == null) {
                 libri = new ArrayList<>();
                 wishList.setLibri(libri);
             }
 
-            // rimuovo la prima occorrenza se presente, altrimenti aggiungo
-            boolean removed = libri.remove(libro);
+            final boolean removed = libri.remove(libro);
             if (!removed) {
                 libri.add(libro);
             }
@@ -76,7 +84,6 @@ public class ModificaPrefServlet extends HttpServlet {
             if (position != null) {
                 address += "#" + position;
             }
-
         }
 
         final RequestDispatcher dispatcher = request.getRequestDispatcher(address);

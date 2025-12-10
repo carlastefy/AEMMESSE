@@ -52,7 +52,7 @@ public class AggiungiAiPrefServlet extends HttpServlet {
             }
 
             // rimuovo la prima occorrenza se presente, altrimenti aggiungo
-            boolean removed = libri.remove(libro);
+            final boolean removed = libri.remove(libro);
             if (removed) {
                 jsonResponse.put("isInWishList", false); // Indica che il libro non è più nei preferiti
             } else {

@@ -35,7 +35,7 @@ public class SearchBarServlet extends HttpServlet {
         final JSONArray jsonArray = new JSONArray();
 
         if (query != null && !query.trim().isEmpty()) {
-            List<Libro> results = libroService.Search(query);
+            final List<Libro> results = libroService.Search(query);
             if (results != null && !results.isEmpty()) {
                 // cache size and limit to 10 to avoid repeated size() calls
                 final int n = Math.min(results.size(), 10);

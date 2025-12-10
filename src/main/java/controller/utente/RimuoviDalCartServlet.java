@@ -45,7 +45,7 @@ public class RimuoviDalCartServlet extends HttpServlet {
             }
 
             // usa un Iterator per rimuovere in modo sicuro senza chiamare size()
-            java.util.Iterator<RigaCarrello> it = righeCarrello.iterator();
+            final java.util.Iterator<RigaCarrello> it = righeCarrello.iterator();
             while (it.hasNext()) {
                 final RigaCarrello riga = it.next();
                 if (riga.getLibro() != null && riga.getLibro().equals(libro)) {
@@ -54,7 +54,7 @@ public class RimuoviDalCartServlet extends HttpServlet {
                 }
             }
             // Crea una risposta JSON per indicare lo stato della rimozione
-            JSONObject jsonResponse = new JSONObject();
+            final JSONObject jsonResponse = new JSONObject();
             jsonResponse.put("success", success);
 
             // Imposta il tipo di contenuto della risposta
