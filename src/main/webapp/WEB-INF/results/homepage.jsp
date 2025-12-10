@@ -12,6 +12,7 @@
     <link rel="stylesheet" type="text/css" href="./css/headerStyle.css">
     <link rel="stylesheet" type="text/css" href="./css/footerStyle.css">
     <link rel="stylesheet" type="text/css" href="./css/homePageStyle.css">
+    <link rel="stylesheet" href="./css/print.css" media="print">
 </head>
 
 <body>
@@ -26,7 +27,15 @@
                  <c:forEach items="${libriHome}" var="libro" varStatus="status">
                     <div class="item" id="libro-${status.index}">
                         <a href="mostra-libro?isbn=${libro.isbn}">
-                            <img class="img" src="${libro.immagine}">
+                            <img
+                                    class="img"
+                                    src="${libro.immagine}"
+                                    alt="${libro.titolo}"
+                                    loading="lazy"
+                                    decoding="async"
+                                    width="230"
+                                    height="310"
+                            >
                         </a>
 
                         <% String path="./images/hearts-icon.png";
@@ -75,27 +84,9 @@
             </div>
         <%@include file="footer.jsp"%>
     </div>
-<script>
-    window.onload = function() {
-        // Ottieni la query string dalla URL
-        var queryString = window.location.search;
 
-        // Crea un oggetto URLSearchParams per gestire i parametri della query string
-        var searchParams = new URLSearchParams(queryString);
+    <script src="./js/scroll-position.js"></script>
 
-        // Ottieni il valore del parametro 'position'
-        var position = searchParams.get('position');
-
-        // Se 'position' è definito, crea l'ancoraggio con quel valore
-        if (position) {
-            var elementId = position;
-            var element = document.getElementById(elementId);
-            if (element) {
-                element.scrollIntoView({ behavior: "auto", block: "start", inline: "nearest" });
-            }
-        }
-    };
-</script>
 
 </body>
 </html>

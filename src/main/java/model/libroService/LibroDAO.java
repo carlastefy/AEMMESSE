@@ -279,4 +279,116 @@ public class LibroDAO {
             throw new RuntimeException(e);
         }
     }
+    // NEW: conta il numero totale di libri che soddisfano la query di ricerca
+    public int countSearch(final String query) {
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps = con.prepareStatement(
+                    "SELECT COUNT(*) " +
+                            "FROM libro " +
+                            "WHERE titolo LIKE ? OR isbn LIKE ?"
+            );
+            ps.setString(1, "%" + query + "%");
+            ps.setString(2, query + "%");
+
+            final ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+            return 0;
+        } catch (final SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // NEW: restituisce solo una pagina di risultati
+    public List<Libro> searchPaged(final String query, final int offset, final int limit) {
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps = con.prepareStatement(
+                    "SELECT isbn, titolo, genere, annoPubblicazione, prezzo, sconto, trama, immagine, disponibile " +
+                            "FROM libro " +
+                            "WHERE titolo LIKE ? OR isbn LIKE ? " +
+                            "ORDER BY titolo ASC, isbn ASC " +
+                            "LIMIT ? OFFSET ?"
+            );
+            ps.setString(1, "%" + query + "%");
+            ps.setString(2, query + "%");
+            ps.setInt(3, limit);
+            ps.setInt(4, offset);
+
+            final ResultSet rs = ps.executeQuery();
+            final List<Libro> libri = new ArrayList<>();
+            while (rs.next()) {
+                final Libro p = new Libro();
+                p.setIsbn(rs.getString("isbn"));
+                p.setTitolo(rs.getString("titolo"));
+                p.setGenere(rs.getString("genere"));
+                p.setAnnoPubblicazioni(rs.getString("annoPubblicazione"));
+                p.setPrezzo(rs.getDouble("prezzo"));
+                p.setSconto(rs.getInt("sconto"));
+                p.setTrama(rs.getString("trama"));
+                p.setImmagine(rs.getString("immagine"));
+                p.setDisponibile(rs.getBoolean("disponibile"));
+                // se nel tuo Search() chiami getScrittura(...) per gli autori, fallo anche qui
+                p.setAutori(this.getScrittura(p.getIsbn()));
+
+                libri.add(p);
+            }
+            return libri;
+        } catch (final SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    // NEW: conta tutti i libri
+    public int countAllLibri() {
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps =
+                    con.prepareStatement("SELECT COUNT(*) FROM libro");
+
+            final ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+            return 0;
+        } catch (final SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // NEW: restituisce solo una pagina di libri
+    public List<Libro> doRetrieveAllPaged(final int offset, final int limit) {
+        final List<Libro> libri = new ArrayList<>();
+        try (final Connection con = ConPool.getConnection()) {
+            final PreparedStatement ps =
+                    con.prepareStatement(
+                            "SELECT isbn, titolo, genere, annoPubblicazione, prezzo, sconto, trama, immagine, disponibile " +
+                                    "FROM libro " +
+                                    "ORDER BY titolo ASC, isbn ASC " +   // ordinati alfabeticamente
+                                    "LIMIT ? OFFSET ?"
+                    );
+
+            ps.setInt(1, limit);
+            ps.setInt(2, offset);
+
+            final ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                final Libro p = new Libro();
+                p.setIsbn(rs.getString(1));
+                p.setTitolo(rs.getString(2));
+                p.setGenere(rs.getString(3));
+                p.setAnnoPubblicazioni(rs.getString(4));
+                p.setPrezzo(rs.getDouble(5));
+                p.setSconto(rs.getInt(6));
+                p.setTrama(rs.getString(7));
+                p.setImmagine(rs.getString(8));
+                p.setDisponibile(rs.getBoolean(9));
+                p.setAutori(this.getScrittura(p.getIsbn()));
+                libri.add(p);
+            }
+            return libri;
+        } catch (final SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
 }

@@ -35,9 +35,37 @@ public class RicercaServlet extends HttpServlet {
         }
         else {
             address="/WEB-INF/results/ricerca.jsp";
-            final List<Libro> results = libroService.Search(query);
+            /*final List<Libro> results = libroService.Search(query);
+            request.setAttribute("results", results);
+            request.setAttribute("q", query);*/
+            // NEW: gestione paginazione
+            int page = 1;
+            final String pageParam = request.getParameter("page");
+            if (pageParam != null) {
+                try {
+                    page = Integer.parseInt(pageParam);
+                } catch (NumberFormatException ignored) {
+                    page = 1;
+                }
+            }
+            if (page < 1) {
+                page = 1;
+            }
+
+            final int pageSize = 15; // scegli tu: 12, 16, 24...
+            final int offset = (page - 1) * pageSize;
+
+            // NEW: numero totale risultati + pagina corrente
+            final int totalResults = libroService.countSearch(query);
+            final int totalPages = (int) Math.ceil((double) totalResults / pageSize);
+
+            final List<Libro> results = libroService.searchPaged(query, offset, pageSize);
+
             request.setAttribute("results", results);
             request.setAttribute("q", query);
+            request.setAttribute("page", page);
+            request.setAttribute("totalPages", totalPages);
+            request.setAttribute("totalResults", totalResults);
         }
 
         final RequestDispatcher dispatcher = request.getRequestDispatcher(address);

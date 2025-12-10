@@ -1,4 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
 <%--
   Created by IntelliJ IDEA.
   User: M.DELUCIA18
@@ -15,18 +17,27 @@
     <link rel="stylesheet" type="text/css" href="./css/headerStyle.css">
     <link rel="stylesheet" type="text/css" href="./css/footerStyle.css">
     <link rel="stylesheet" type="text/css" href="./css/carrelloStyle.css">
+    <link rel="stylesheet" href="./css/print.css" media="print">
+
 
 </head>
 <body>
 <div class="wrapper">
     <%@include file="header.jsp"%>
     <div class="content">
+        <%-- Riepilogo risultati ricerca (NEW) --%>
+        <c:if test="${not empty q}">
+            <p class="search-summary">
+                Trovati ${totalResults} risultati per "<strong>${fn:escapeXml(q)}</strong>"
+            </p>
+        </c:if>
+
         <div class="book-list">
             <c:if test="${not empty results}">
                 <c:forEach var="libro" items="${results}">
                     <div class="book-item">
                         <a href="mostra-libro?isbn=${libro.isbn}">
-                            <img src="${libro.immagine}" alt="${libro.titolo}" class="book-image">
+                            <img src="${libro.immagine}" alt="${libro.titolo}" class="book-image" loading="lazy">
                         </a>
                         <div class="book-details">
                             <h3 class="book-title">${libro.titolo}</h3>
@@ -72,6 +83,77 @@
                 </c:forEach>
             </c:if>
         </div>
+            <c:url var="ricercaUrl" value="/ricerca-servlet"/>
+
+            <c:if test="${totalPages > 1}">
+                <div class="pagination">
+
+                        <%-- Calcolo intervallo di pagine da mostrare (max 7) --%>
+                    <c:set var="maxPagesToShow" value="7"/>
+
+                    <c:set var="startPage" value="${page - 3}"/>
+                    <c:if test="${startPage < 1}">
+                        <c:set var="startPage" value="1"/>
+                    </c:if>
+
+                    <c:set var="endPage" value="${startPage + maxPagesToShow - 1}"/>
+                    <c:if test="${endPage > totalPages}">
+                        <c:set var="endPage" value="${totalPages}"/>
+                        <c:set var="startPage" value="${endPage - maxPagesToShow + 1}"/>
+                        <c:if test="${startPage < 1}">
+                            <c:set var="startPage" value="1"/>
+                        </c:if>
+                    </c:if>
+
+                        <%-- Precedente --%>
+                    <c:choose>
+                        <c:when test="${page > 1}">
+                            <a href="${ricercaUrl}?q=${fn:escapeXml(q)}&page=${page - 1}" class="page-link">
+                                &laquo; Precedente
+                            </a>
+                        </c:when>
+                        <c:otherwise>
+                            <span class="page-link disabled">&laquo; Precedente</span>
+                        </c:otherwise>
+                    </c:choose>
+
+                        <%-- Prima pagina + ellissi se necessario --%>
+                    <c:if test="${startPage > 1}">
+                        <a href="${ricercaUrl}?q=${fn:escapeXml(q)}&page=1" class="page-link">1</a>
+                        <span class="page-link ellipsis">…</span>
+                    </c:if>
+
+                        <%-- Pagine centrali --%>
+                    <c:forEach var="p" begin="${startPage}" end="${endPage}">
+                        <a href="${ricercaUrl}?q=${fn:escapeXml(q)}&page=${p}"
+                           class="page-link ${p == page ? 'active' : ''}">
+                                ${p}
+                        </a>
+                    </c:forEach>
+
+                        <%-- Ultima pagina + ellissi se necessario --%>
+                    <c:if test="${endPage < totalPages}">
+                        <span class="page-link ellipsis">…</span>
+                        <a href="${ricercaUrl}?q=${fn:escapeXml(q)}&page=${totalPages}" class="page-link">
+                                ${totalPages}
+                        </a>
+                    </c:if>
+
+                        <%-- Successiva --%>
+                    <c:choose>
+                        <c:when test="${page < totalPages}">
+                            <a href="${ricercaUrl}?q=${fn:escapeXml(q)}&page=${page + 1}" class="page-link">
+                                Successiva &raquo;
+                            </a>
+                        </c:when>
+                        <c:otherwise>
+                            <span class="page-link disabled">Successiva &raquo;</span>
+                        </c:otherwise>
+                    </c:choose>
+
+                </div>
+            </c:if>
+
     </div>
     <%@include file="footer.jsp"%>
 </div>

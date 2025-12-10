@@ -17,6 +17,8 @@
     <link rel="stylesheet" type="text/css" href="./css/footerStyle.css">
     <link rel="stylesheet" type="text/css" href="./css/homePageStyle.css">
     <link rel="stylesheet" type="text/css" href="./css/repartiStyle2.css">
+    <link rel="stylesheet" type="text/css" href="./css/print.css" media="print">
+
 
   </head>
   <body>
@@ -28,7 +30,9 @@
        //List<Reparto> reparti = (List<Reparto>) session.getAttribute("reparti");
       int i = 0;%>
      <div class="reparto">
-       <img class="imgReparto" alt="immagine <%=reparto.getNome()%>"src="<%=reparto.getImmagine()%>">
+       <img class="imgReparto"
+            alt="immagine ${reparto.nome}"
+            src="${pageContext.request.contextPath}/${reparto.immagine}">
        <div class="dropdown-container">
          <form id="repartoForm" action="mostra-reparto" method="GET">
            <select id="repartoSelect" class="dropdown-menu" name="id" onchange="document.getElementById('repartoForm').submit()">
@@ -99,42 +103,8 @@
 
       </c:forEach>
     </div>
+       <script src="./js/scroll-position.js"></script>
 
-
-       <script>
-         // Imposta l'opzione predefinita nel menu a tendina
-         window.onload = function () {
-           var repartoSelect = document.getElementById('repartoSelect');
-           if (repartoSelect) {
-             repartoSelect.value = repartoAttuale;
-           }
-         };
-       </script>
-       </div>
-       <%@include file="footer.jsp" %>
-       </div>
-
-  <script>
-    window.onload = function() {
-      // Ottieni la query string dalla URL
-      var queryString = window.location.search;
-
-      // Crea un oggetto URLSearchParams per gestire i parametri della query string
-      var searchParams = new URLSearchParams(queryString);
-
-      // Ottieni il valore del parametro 'position' (o qualsiasi altro nome tu abbia usato)
-      var position = searchParams.get('position');
-
-      // Se 'position' è definito, crea l'ancoraggio con quel valore
-      if (position) {
-        var elementId = position;
-        var element = document.getElementById(elementId);
-        if (element) {
-          element.scrollIntoView({ behavior: "auto", block: "start", inline: "nearest" });
-        }
-      }
-    };
-  </script>
   </body>
 
 

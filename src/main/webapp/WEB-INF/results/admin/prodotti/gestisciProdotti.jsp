@@ -144,13 +144,54 @@
             }
         }
 
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.4rem;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            font-size: 0.9rem;
+        }
+
+        .pagination .page-link {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            color: #333;
+            text-decoration: none;
+        }
+
+        .pagination .page-link:hover {
+            background-color: #f5f5f5;
+        }
+
+        .pagination .page-link.active {
+            background-color: #427b8a;
+            color: #fff;
+            border-color: #427b8a;
+            cursor: default;
+        }
+
+        .pagination .page-link.disabled {
+            opacity: 0.4;
+            pointer-events: none;
+        }
 
 
     </style>
+    <link rel="stylesheet" type="text/css" href="./css/print.css" media="print">
+
 </head>
 <body>
 <h1>Lista di prodotti</h1>
 <div class="container">
+    <p style="margin-bottom: 15px;">
+        Trovati ${totalResults} prodotti in totale.
+        Pagina ${page} di ${totalPages}.
+    </p>
     <div class="back-home">
         <form action="index.html">
             <input type="submit" value="Torna alla homepage">
@@ -203,6 +244,87 @@
             </tr>
         </c:forEach>
     </table>
+
+    <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
+    <c:url var="gestisciUrl" value="/gestisci-prodotti"/>
+
+    <c:if test="${totalPages > 1}">
+        <div class="pagination">
+
+            <!-- quante pagine mostrare al massimo -->
+            <c:set var="maxPagesToShow" value="7"/>
+
+            <!-- calcolo finestra pagine (startPage / endPage) -->
+            <c:set var="startPage" value="${page - 3}"/>
+            <c:if test="${startPage < 1}">
+                <c:set var="startPage" value="1"/>
+            </c:if>
+
+            <c:set var="endPage" value="${startPage + maxPagesToShow - 1}"/>
+            <c:if test="${endPage > totalPages}">
+                <c:set var="endPage" value="${totalPages}"/>
+                <c:set var="startPage" value="${endPage - maxPagesToShow + 1}"/>
+                <c:if test="${startPage < 1}">
+                    <c:set var="startPage" value="1"/>
+                </c:if>
+            </c:if>
+
+            <!-- Precedente -->
+            <c:choose>
+                <c:when test="${page > 1}">
+                    <a href="${gestisciUrl}?page=${page - 1}" class="page-link">
+                        &laquo; Precedente
+                    </a>
+                </c:when>
+                <c:otherwise>
+                    <span class="page-link disabled">&laquo; Precedente</span>
+                </c:otherwise>
+            </c:choose>
+
+            <!-- Prima pagina + ... se la finestra non parte da 1 -->
+            <c:if test="${startPage > 1}">
+                <a href="${gestisciUrl}?page=1" class="page-link">1</a>
+                <span class="page-link ellipsis">…</span>
+            </c:if>
+
+            <!-- Pagine centrali -->
+            <c:forEach var="p" begin="${startPage}" end="${endPage}">
+                <a href="${gestisciUrl}?page=${p}"
+                   class="page-link ${p == page ? 'active' : ''}">
+                        ${p}
+                </a>
+            </c:forEach>
+
+            <!-- ... + ultima pagina se la finestra non arriva alla fine -->
+            <c:if test="${endPage < totalPages}">
+                <span class="page-link ellipsis">…</span>
+                <a href="${gestisciUrl}?page=${totalPages}" class="page-link">
+                        ${totalPages}
+                </a>
+            </c:if>
+
+            <!-- Successiva -->
+            <c:choose>
+                <c:when test="${page < totalPages}">
+                    <a href="${gestisciUrl}?page=${page + 1}" class="page-link">
+                        Successiva &raquo;
+                    </a>
+                </c:when>
+                <c:otherwise>
+                    <span class="page-link disabled">Successiva &raquo;</span>
+                </c:otherwise>
+            </c:choose>
+
+        </div>
+    </c:if>
+
+
+</div>
+</body>
+</html>
+
+
 </div>
 </body>
 </html>

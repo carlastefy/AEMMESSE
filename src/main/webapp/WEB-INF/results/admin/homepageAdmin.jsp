@@ -96,9 +96,11 @@
     </div>
     <% } else if ("GestoreOrdine".equals(userType)) { %>
     <div class="iconAmm">
+
+
         <a href="gestisci-ordini">
             <img src="./images/procurement.png" alt="gestisci ordini" width="48" height="50" class="image">
-            <a href="gestici-ordini"> Modifica Ordini </a><br><br>
+            <a href="gestisci-ordini"> Modifica Ordini </a><br><br>
         </a>
     </div>
     <% } %>

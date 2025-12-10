@@ -44,6 +44,7 @@ public class HomePageServlet extends HttpServlet {
             final List<Reparto> reparti = (List<Reparto>) getServletContext().getAttribute("reparti");
             if (reparti != null) {
                 for (final Reparto reparto : reparti) {
+                    String s = reparto.getNome();
                     if (reparto != null && "Libri di Tendenza".equals(reparto.getNome())) {
                         final List<Libro> libriHome = reparto.getLibri();
                         request.setAttribute("libriHome", libriHome);
